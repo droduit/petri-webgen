@@ -1,0 +1,125 @@
+{
+   "scenes":[
+      {
+         "id":"page1",
+		 "title":"Ma scene 1",
+		 "mobile": true,
+		 "lang":"fr",
+		 "style": {
+			"background":"#444",
+			"color":"brown",
+			"font-size":"15px"
+		  },
+         "sprites":[
+            {
+               "id": 1,
+               "nature":"video",
+               "attr":{
+					"src":"https://www.youtube.com/embed/Vpg9yizPP_g",
+					"width":560,
+					"height":315
+			   },
+			   "style":{
+					"border":"3px solid black"
+				},
+				"eventProperties":{
+					"endDuration":true,
+					"timer":15
+				}
+				
+            },
+			{
+				"id": 3,
+				"nature": "p",
+				"value" : "Paragraphe au milieu" 
+			},
+			{
+				"id":2,
+				"nature":"img",
+				"attr":{
+					"src":"chien.jpg",
+					"width":420,
+					"height":559
+			   },
+				"style":{
+					"border-radius":"8px",
+					"transition":"all 0.2s linear",
+					"text-align":"center"
+				},
+				"hover":{
+					"opacity": 0.8,
+					"border":"4px solid #000"
+				},
+				"eventProperties":{
+					"click":true
+				}
+			}
+         ]
+      },
+      {
+         "id":"page2",
+         "sprites":[
+            {
+               "id":1,
+               "nature":"video",
+               "attr":{
+					"src":"video.mp4",
+					"width":854,
+					"height":480
+			   },
+			   "style":{},
+				"eventProperties":{
+					"endDuration":true,
+					"timer":20
+				}
+            },
+			{
+				"id":2,
+				"nature":"img",
+				"attr":{
+					"src":"https://scontent-frx5-1.xx.fbcdn.net/v/t1.0-9/22045584_10214332095521962_2816500085493263649_n.jpg?oh=43eef7581d707362c13306aeac10e41a&oe=5A7A2AA9",
+					"width":547,
+					"height":523
+			   },
+				"style":{},
+				"eventProperties":{
+					"click":true
+				}
+			}
+         ]
+      }
+   ],
+   "transitions":[
+      {
+         "id":"trans1",
+         "associationIn":{
+            "id":"0000",
+            "regles":[
+               {
+                  "id":"00000",
+                  "sprites":["img2.click"],
+                  "scenes":["1"]
+               },
+               {
+                  "id":"00001",
+                  "sprites":["video1.end"],
+                  "scenes":["1"]
+               }
+            ]
+         },
+         "associationOut":{
+            "id":"0100",
+            "regles":[
+               {
+                  "id":"000010",
+                  "scenes":["2"]
+               },
+			   {
+                  "id":"000011",
+                  "scenes":["2"]
+               }
+            ]
+         }
+      }
+   ]
+}
