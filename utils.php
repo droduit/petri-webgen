@@ -11,12 +11,22 @@ function getListDir($dir) {
 	return $f;
 }
 
-function exist($array, $attr, $otherwise) {
-	return in_array($attr, $array) ?  $array[$attr] : $otherwise;
+function debug($o) {
+	echo '<hr><pre>';
+	print_r($o);
+	echo'</pre><hr><br>';
 }
 
-function getHeader($attrs) {
-	
+function getSpriteName($id) {
+	return 's'.$id;
+}
+
+function exist($array, $attr, $otherwise) {
+	return isset($array[$attr]) ?  $array[$attr] : $otherwise;
+}
+
+function getHeader($scene) {
+	$attrs = $scene->getArray();
 	return '<!DOCTYPE HTML>
 	<html lang="'.exist($attrs, 'lang', "fr-FR").'">
 	<head>
@@ -24,14 +34,15 @@ function getHeader($attrs) {
 		<meta charset="UTF-8">
 		'.( exist($attrs, 'mobile', true) ? '<meta name="viewport" content="width=device-width,user-scalable=0">' : '').'
 		<script src="https://code.jquery.com/jquery-1.11.3.js"></script>
-		<style>body { font-family: sans-serif; } a { text-decoration: none; color: black; }</style>
+		<style>body { font-family: sans-serif; padding-bottom: 20px; } a { text-decoration: none; color: black; }</style>
+		'.$scene->getCSS().'
 	</head>
 	<body>';
 }
 
 function getFooter($p="") {
 	global $debug;
-	return ''.
+	return 
 	($debug ?'<div style="padding: 6px; position: fixed; bottom:0; left:0; width: 100%; background:#eee; text-align: center; box-sizing: border-box"><a href="../index.php?reload='.$p.'">Regénérer à partir du fichier XML</a></div>' : '')
 	.'</body></html>';
 }

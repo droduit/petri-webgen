@@ -15,8 +15,15 @@ class Scene {
 		$sprites = array();
 	}
 	
-	function addToken($sprite) {
+	function addSprite($sprite) {
 		$this->sprites[$sprite->getName()] = $sprite;
+	}
+	
+	function getSprite($spriteId) {
+		if(isset($this->sprites[$spriteId])) 
+			return $this->sprites[$spriteId];
+		
+		return $this->sprites['s3'];
 	}
 	
 	function bindTransition($transition) {
@@ -32,18 +39,32 @@ class Scene {
 		$htmlProp = "<style>";
 		
 		// Style of the scene
-		if(in_array('style', $this->sceneArray)) {
+		if(isset($this->sceneArray['style'])) {
 			$htmlProp .= "body {";
 			foreach($this->sceneArray['style'] as $k => $v) {
 				$htmlProp .= $k .":". $v."; ";
 			}
-			$htmlProp .= "}";
+			$htmlProp .= "} ";
+		}
+		
+		// Custom class
+		if(isset($this->sceneArray['class'])) {
+			foreach($this->sceneArray['class'] as $class => $values) {
+				$htmlProp .= ".".$class." {";
+				foreach($values as $k => $v) {
+					$htmlProp .= $k .":". $v."; ";
+				}
+				$htmlProp .= "} ";
+			}
 		}
 		
 		// Styles of sprites
 		foreach($this->sprites as $sprite) {
 			$props = $sprite->getProps();
-			if(count($props['style']) == 0) return "";
+			
+			if(isset($props['style']) && count($props['style']) == 0)
+				return $htmlProp=="" ? "" : $htmlProp."</style>";
+			
 			foreach($CSS_STYLES as $kindCss) {
 				if(isset($props[$kindCss]) && count($props[$kindCss]) > 0) {
 					$kind = ($kindCss != "style") ? ":".$kindCss : "";
@@ -57,6 +78,7 @@ class Scene {
 		}
 		
 		$htmlProp .= "</style>";
+		
 		return $htmlProp;
 	}
 	
@@ -64,7 +86,7 @@ class Scene {
 	function getSprites() { return $this->sprites; }
 	function getId() { return $this->id; }
 	function getTitle() { return $this->title; }
-	function debug() { echo '<pre>'; print_r($this->sceneArray); echo '</pre>'; }
+	function debug() { echo "SCENE : ".$this->id.'<hr><pre>'; print_r($this); echo '</pre><hr><br>'; }
 
 }
 ?>

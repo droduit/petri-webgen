@@ -1,15 +1,20 @@
 {
-   "scenes":[
+	"scenes":[
       {
          "id":"page1",
 		 "title":"Ma scene 1",
 		 "mobile": true,
 		 "lang":"fr",
 		 "style": {
-			"background":"#444",
+			"background":"#ddd",
 			"color":"brown",
 			"font-size":"15px"
 		  },
+		  "class":{
+			"clear": { "clear":"both" },
+			"contact-box": { "border":"1px solid #ddd", "border-radius":"8px", "padding":"6px", "margin":"20px auto" },
+			"float_l": { "float":"left" }
+		 },
          "sprites":[
             {
                "id": 1,
@@ -26,13 +31,7 @@
 					"endDuration":true,
 					"timer":15
 				}
-				
             },
-			{
-				"id": 3,
-				"nature": "p",
-				"value" : "Paragraphe au milieu" 
-			},
 			{
 				"id":2,
 				"nature":"img",
@@ -53,7 +52,23 @@
 				"eventProperties":{
 					"click":true
 				}
-			}
+			},
+			{
+				"id": 3, "nature":"div", "attr":{"class":"contact-box float_l"}, "childs": [4, 5]
+			},
+			{
+				"id":4, "nature":"div", "attr":{"class":"float_l"}, "style":{ "margin-right":"20px"},
+				"childs": [6]
+			},
+			{
+				"id":5, "nature":"div", "attr":{"class":"float_l"},
+				"childs": [7, 8]
+			},
+			{
+				"id":6, "nature":"img", "attr":{"src":"dom.jpg", "width":115}
+			},
+			{"id":7, "nature":"h2", "value":"Dominique Roduit"},
+			{"id":8, "nature":"h5", "value":"EPFL"}
          ]
       },
       {

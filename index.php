@@ -27,22 +27,37 @@ require_once('objects.php');
 		$sceneArray = array();
 		foreach($petri['scenes'] as $s) {
 			$scene = new Scene($s);
+	
+			// List of all child nodes of the scene
+			$child_nodes = array();
+			foreach($s['sprites'] as $sprite) {
+				if(isset($sprite['childs'])) {
+					foreach($sprite['childs'] as $c) {
+						$child_nodes[$c] = getSpriteName($sprite['id']);
+					}
+				}
+			}
+			
 			
 			// Sprites --------------------------------
 			foreach($s['sprites'] as $sprite) {
-				
 				// Fetch de tous les tableaux
 				$props = array();
 				foreach($SPRITE_TAG_TO_FETCH as $attrName) {
-					$props[$attrName] = isset($sprite[$attrName]) ? $sprite[$attrName] : array();
+					if(isset($sprite[$attrName])) {
+						$props[$attrName] = $sprite[$attrName];
+					}
 				}
 				
 				$value = isset($sprite['value']) ? $sprite['value'] : NULL;
-				$name = uniqid($sprite['nature']."_".$sprite['id']);
-				$newSprite = new Sprite($sprite['nature'], $name, $value, $props);
+				$newSprite = new Sprite($sprite['nature'], $sprite['id'], $value, $props);
 				
-				// Ajout du sprite à la scene
-				$scene->addToken($newSprite);
+				// Ajout du sprite à la scene ou dans son sprite parent
+				if(isset($child_nodes[$sprite['id']])) {
+					$scene->getSprite($child_nodes[$sprite['id']])->addChild($newSprite);
+				} else {
+					$scene->addSprite($newSprite);
+				}
 			}
 			// -----------------------------------------
 			
@@ -83,8 +98,7 @@ require_once('objects.php');
 		// Physical files generation --------------------------
 		$nFile = 0;
 		foreach($sceneArray as $scene) {
-			$content = getHeader($scene->getArray());
-			$content .= $scene->getCSS();
+			$content = getHeader($scene);
 			if(count($scene->getSprites()) > 0) {
 				foreach($scene->getSprites() as $token) {
 					$content .= $token->getHTML();
@@ -97,6 +111,19 @@ require_once('objects.php');
 		// ---------------------------------------------------------
 			
 		?>
+		
+		<div style="border:1px solid #ddd; border-radius: 8px; padding: 6px; margin:20px auto; float:left">
+			<div style="float:left; margin-right: 20px">
+				<img width="115" src="https://scontent-frx5-1.xx.fbcdn.net/v/t1.0-9/22045584_10214332095521962_2816500085493263649_n.jpg?oh=43eef7581d707362c13306aeac10e41a&oe=5A7A2AA9" />
+			</div>
+			<div style="float: left">
+				<h2>Dominique Roduit</h2>
+				<h5>EPFL</h5>
+			</div>
+			<div style="clear:both"></div>
+		</div>
+		
+		<div style="clear:both"></div>
 		
 		<?= $nFile ?> files successfully generated
 		<?php

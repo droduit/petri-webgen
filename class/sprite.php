@@ -1,24 +1,40 @@
 <?php
 class Sprite {
 	private $type;
+	private $id;
 	private $name;
 	private $value;
 	private $events;	
 	private $props;
+	private $childs;
 		
-	function __construct($type, $name, $value, $props) {
+	function __construct($type, $id, $value, $props) {
 		$this->type = $type;
-		$this->name = $name;
+		$this->id = $id;
+		$this->name = getSpriteName($id); //uniqid($sprite['nature']."_".$sprite['id']);;
 		$this->props = $props;
 		$this->value = $value;
 		
 		// By default, empty event queue
 		$this->events = array();
+		$this->childs = array();
 	}
 	
 	function getName() { return $this->name; }
 	function getProps() { return $this->props; }
 	function attachEvent($e) { $this->events[] = $e; }
+	
+	function addChild($sprite) {
+		$this->childs[$sprite->getName()] = $sprite;
+	}
+	function getChild($name) {
+		if(isset($this->childs[$name])) {
+			return $this->childs[$name];
+		} else {
+			// Chercher dans les enfants de manière récursive
+			//while(
+		}
+	}
 	
 	function getHTML() {
 		$html = "";
@@ -40,7 +56,7 @@ class Sprite {
 					.$this->getHTMLAttributes().' '
 					.$this->getHTMLEvents()
 					.' class="'.$this->name.'"'
-				. ($closingBalise ? '>'.$this->value.'</'.$elmType.'>' :
+				. ($closingBalise ? '>'.$this->value.$this->getChildsHTML().'</'.$elmType.'>' :
 					(empty($this->value) ? ' />' : ' value="'.$this->value.'" />'));
 		return $html;
 	}
@@ -57,6 +73,14 @@ class Sprite {
 		}
 		
 		return $htmlAttrs;
+	}
+	
+	function getChildsHTML() {
+		$html = "";
+		foreach($this->childs as $child) {
+			$html .= $child->getHTML();
+		}
+		return $html;
 	}
 	
 	function getHTMLEvents() {
