@@ -57,7 +57,8 @@
                "attr":{
 					"src":"video.mp4",
 					"width":854,
-					"height":480
+					"height":480,
+					"autoplay":true
 			   },
 				"eventProperties":{
 					"endDuration": { "timer":5 }

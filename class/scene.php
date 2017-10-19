@@ -82,6 +82,27 @@ class Scene {
 		return $htmlProp;
 	}
 	
+	function getJS() {
+		$scripts = "";
+		
+		foreach($this->sprites as $sprite) {
+			$scripts .= $sprite->getJS();
+		}
+		
+		if(empty($scripts)) return "";
+		return "<script>$(function(){ ".$scripts." });</script>";
+	}
+	
+	function getHTMLContent() {
+		$html = "";
+		if(count($this->sprites) > 0) {
+			foreach($this->sprites as $sprite) {
+				$html .= $sprite->getHTML();
+			}
+		}
+		return $html;
+	}
+	
 	function getArray() { return $this->sceneArray; }
 	function getSprites() { return $this->sprites; }
 	function getId() { return $this->id; }

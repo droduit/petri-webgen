@@ -35,7 +35,8 @@ function getHeader($scene) {
 		'.( exist($attrs, 'mobile', true) ? '<meta name="viewport" content="width=device-width,user-scalable=0">' : '').'
 		<script src="https://code.jquery.com/jquery-1.11.3.js"></script>
 		<style>body { font-family: sans-serif; padding-bottom: 20px; } a { text-decoration: none; color: black; }</style>
-		'.$scene->getCSS().'
+		'.$scene->getCSS()
+		 .$scene->getJS().'
 	</head>
 	<body>';
 }

@@ -112,11 +112,7 @@ $err = array();
 			$nFile = 0;
 			foreach($sceneArray as $scene) {
 				$content = getHeader($scene);
-				if(count($scene->getSprites()) > 0) {
-					foreach($scene->getSprites() as $token) {
-						$content .= $token->getHTML();
-					}
-				}
+				$content .= $scene->getHTMLContent();
 				$content .= getFooter($scene->getId());
 				createFile($content, $scene->getId());
 				$nFile++;

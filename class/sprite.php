@@ -7,6 +7,7 @@ class Sprite {
 	private $events;	
 	private $props;
 	private $childs;
+	private $jsAttached;
 		
 	function __construct($type, $id, $value, $props) {
 		$this->type = $type;
@@ -18,12 +19,15 @@ class Sprite {
 		// By default, empty event queue
 		$this->events = array();
 		$this->childs = array();
+		
+		$this->jsAttached = "";
 	}
 	
 	function getId() { return $this->id; }
 	function getName() { return $this->name; }
 	function getProps() { return $this->props; }
-	function attachEvent($e) { $this->events[] = $e; }
+	function attachEvent($e) { $this->events[] = $e; $this->generateJS(); }
+	function getJS() { return $this->jsAttached; }
 	
 	function addChild($sprite) {
 		$this->childs[$sprite->getName()] = $sprite;
@@ -42,6 +46,7 @@ class Sprite {
 		
 		
 		$elmType = $this->type;
+		
 		if($elmType == "video") {
 			if(strpos($this->props['attr']['src'], '://') != false) {
 				$elmType = "iframe";
@@ -59,6 +64,7 @@ class Sprite {
 					.' class="'.$this->name.'"'
 				. ($closingBalise ? '>'.$this->value.$this->getChildsHTML().'</'.$elmType.'>' :
 					(empty($this->value) ? ' />' : ' value="'.$this->value.'" />'));
+		
 		return $html;
 	}
 	
@@ -71,6 +77,10 @@ class Sprite {
 			foreach($this->props['attr'] as $name => $val) {
 				$htmlAttrs .= $name."=\"".$val."\" ";
 			}
+		}
+		
+		if($this->type == "video" && !isset($this->props['attr']['controls'])) {
+			$htmlAttrs .= " controls ";
 		}
 		
 		return $htmlAttrs;
@@ -87,14 +97,27 @@ class Sprite {
 	function getHTMLEvents() {
 		$htmlEvents = "";
 		foreach($this->events as $e) {
-			$htmlEvents .= "on".$e->getEventType().'="document.location.href=\''.$e->getScenePost().'.html\'" ';
+			switch($e->getEventType()) {
+				case "endDuration": break;
+				default:
+					$htmlEvents .= "on".$e->getEventType().'="document.location.href=\''.$e->getScenePost().'.html\'" ';
+				break;
+			}
 		}
 		// $('video').on('ended', function(){ ... });
 		// play, pause, ended
 		return $htmlEvents;
 	}
 	
-	
+	function generateJS() {
+		foreach($this->events as $e) {
+			switch($e->getEventType()) {
+				case "endDuration":
+					$this->jsAttached .= "$('.".$this->name."').on('ended', function(){ document.location.href='".$e->getScenePost().".html'; });";
+				break;
+			}
+		}
+	}
 	
 }
 ?>
