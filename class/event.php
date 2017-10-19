@@ -1,16 +1,16 @@
 <?php
 class Event {
-	private $name;
-	private $trigger;
+	private $eventType;
+	private $elemTrigger;
 	private $scenePost;
 	
-	function __construct($name, $trigger) {
-		$this->name = $name;
-		$this->trigger = $trigger;
+	function __construct($eventType, $elemTrigger) {
+		$this->eventType = $eventType;
+		$this->elemTrigger = $elemTrigger;
 	}
 	
-	function getName() { return $this->name; }
-	function getTrigger() { return $this->trigger; }
+	function getEventType() { return $this->eventType; }
+	function getElemTrigger() { return $this->elemTrigger; }
 	function getScenePost() { return $this->scenePost; }
 	
 	function setScenePost($post) {

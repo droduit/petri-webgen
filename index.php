@@ -2,8 +2,14 @@
 $debug = true;
 
 require_once('utils.php');
-require_once('objects.php');
-		
+
+$dirIncluded = "class";
+foreach(getListDir($dirIncluded) as $f) {
+	require_once($dirIncluded."/".$f);
+}
+
+// Contains errors generated during the processing
+$err = array();
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -16,6 +22,7 @@ require_once('objects.php');
 	<body>
 	
 		<?php
+		
 		
 		// Chargement du fichier
 		// $petri = simplexml_load_file("petri.xml");
@@ -64,52 +71,58 @@ require_once('objects.php');
 			// Ajout de la scene 
 			$sceneArray[$s['id']] = $scene;
 		}
-		
 
-		/*
-		// Pre
-		$arcsPre = array();
-		foreach($petri['pre'] as $pre) {
-			$arcsPre[$pre['id-trans']] = $pre['id-scene']; 
-		}
-		
-		// Post
-		$arcsPost = array();
-		foreach($petri['post'] as $post) {
-			$arcsPost[$post['id-trans']] = $post['id-scene']; 
-		}
-		*/
-		
-		/*
 		// Transitions
-		//$transArray = array();
-		foreach($petri->transitions->transition as $t) {	
-			$transition = new Transition($t['id'], $arcsPost[(string)$t['id']], null);
-			foreach($t->event as $e) {
-				$event = new Event($e['name'], $e['trigger']);
-				$event->setScenePost($arcsPost[(string)$t['id']]);
-				$transition->addEvent($event); 
+		foreach($petri['transitions'] as $trans) {
+			$assocOut = array();
+			foreach($trans['associationOut']['regles'] as $aO) {
+				$assocOut[$aO['id']] = $aO['scenes'];
 			}
-			$sceneArray[(string)$t['id-scene']]->bindTransition($transition);
+			
+			foreach($trans['associationIn']['regles'] as $aI) {
+				$sceneTo = $assocOut[$aI['id']][0];
+				
+				foreach($aI['scenes'] as $sceneFrom) {
+					$transition = new Transition($aI['id'], $sceneTo, null);
+					
+					foreach($aI['sprites'] as $sprite) {
+						$split = explode('.', $sprite);
+						if(count($split) != 2) {
+							$err[] = "La regle id=".$aI['id']." de la transition id=".$trans['id']." est malformée";
+						}
+						$eventType = $split[1];
+						$elemTrigger = $split[0];
+						$event = new Event($eventType, $elemTrigger); 
+						$event->setScenePost($sceneTo);
+						$transition->addEvent($event);
+					}
+					
+					$sceneArray[$sceneFrom]->bindTransition($transition);
+				}
+			}
 		}
-		*/
 		// ------------------------------------------------------
 		
 		// Physical files generation --------------------------
-		$nFile = 0;
-		foreach($sceneArray as $scene) {
-			$content = getHeader($scene);
-			if(count($scene->getSprites()) > 0) {
-				foreach($scene->getSprites() as $token) {
-					$content .= $token->getHTML();
+		foreach($err as $er) {
+			echo "<p>".$er."</p>";
+		}
+		
+		if(count($err) == 0) {
+			$nFile = 0;
+			foreach($sceneArray as $scene) {
+				$content = getHeader($scene);
+				if(count($scene->getSprites()) > 0) {
+					foreach($scene->getSprites() as $token) {
+						$content .= $token->getHTML();
+					}
 				}
+				$content .= getFooter($scene->getId());
+				createFile($content, $scene->getId());
+				$nFile++;
 			}
-			$content .= getFooter($scene->getId());
-			createFile($content, $scene->getId());
-			$nFile++;
 		}
 		// ---------------------------------------------------------
-			
 		?>
 		
 		<div style="border:1px solid #ddd; border-radius: 8px; padding: 6px; margin:20px auto; float:left">

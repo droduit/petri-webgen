@@ -16,7 +16,7 @@ class Scene {
 	}
 	
 	function addSprite($sprite) {
-		$this->sprites[$sprite->getName()] = $sprite;
+		$this->sprites[$sprite->getId()] = $sprite;
 	}
 	
 	function getSprite($spriteId) {
@@ -28,8 +28,8 @@ class Scene {
 	
 	function bindTransition($transition) {
 		foreach($transition->getEvents() as $e) {
-			if($this->sprites[(string)$e->getTrigger()] != null) {
-				$this->sprites[(string)$e->getTrigger()]->attachEvent($e);
+			if($this->sprites[(string)$e->getElemTrigger()] != null) {
+				$this->sprites[(string)$e->getElemTrigger()]->attachEvent($e);
 			}
 		}
 	}
@@ -48,9 +48,9 @@ class Scene {
 		}
 		
 		// Custom class
-		if(isset($this->sceneArray['class'])) {
-			foreach($this->sceneArray['class'] as $class => $values) {
-				$htmlProp .= ".".$class." {";
+		if(isset($this->sceneArray['css'])) {
+			foreach($this->sceneArray['css'] as $class => $values) {
+				$htmlProp .= $class." {";
 				foreach($values as $k => $v) {
 					$htmlProp .= $k .":". $v."; ";
 				}

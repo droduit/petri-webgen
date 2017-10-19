@@ -20,6 +20,7 @@ class Sprite {
 		$this->childs = array();
 	}
 	
+	function getId() { return $this->id; }
 	function getName() { return $this->name; }
 	function getProps() { return $this->props; }
 	function attachEvent($e) { $this->events[] = $e; }
@@ -86,7 +87,7 @@ class Sprite {
 	function getHTMLEvents() {
 		$htmlEvents = "";
 		foreach($this->events as $e) {
-			$htmlEvents .= "on".$e->getName().'="document.location.href=\''.$e->getScenePost().'.html\'" ';
+			$htmlEvents .= "on".$e->getEventType().'="document.location.href=\''.$e->getScenePost().'.html\'" ';
 		}
 		// $('video').on('ended', function(){ ... });
 		// play, pause, ended

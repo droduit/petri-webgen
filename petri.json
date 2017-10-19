@@ -10,10 +10,12 @@
 			"color":"brown",
 			"font-size":"15px"
 		  },
-		  "class":{
-			"clear": { "clear":"both" },
-			"contact-box": { "border":"1px solid #ddd", "border-radius":"8px", "padding":"6px", "margin":"20px auto" },
-			"float_l": { "float":"left" }
+		  "css":{
+			".clear": { "clear":"both" },
+			".contact-box": { "border":"1px solid #ddd", "border-radius":"8px", "padding":"6px", "margin":"20px auto" },
+			".float_l": { "float":"left" },
+			"img": { "border-radius":"8px", "transition":"all 0.2s linear", "text-align":"center" },
+			"img:hover": { "opacity": 0.8, "border":"4px solid #000"}
 		 },
          "sprites":[
             {
@@ -28,9 +30,8 @@
 					"border":"3px solid black"
 				},
 				"eventProperties":{
-					"endDuration":true,
-					"timer":15
-				}
+					"endDuration": { "timer":2 }
+ 				}
             },
 			{
 				"id":2,
@@ -39,40 +40,16 @@
 					"src":"chien.jpg",
 					"width":420,
 					"height":559
-			   },
-				"style":{
-					"border-radius":"8px",
-					"transition":"all 0.2s linear",
-					"text-align":"center"
-				},
-				"hover":{
-					"opacity": 0.8,
-					"border":"4px solid #000"
-				},
-				"eventProperties":{
-					"click":true
-				}
-			},
-			{
-				"id": 3, "nature":"div", "attr":{"class":"contact-box float_l"}, "childs": [4, 5]
-			},
-			{
-				"id":4, "nature":"div", "attr":{"class":"float_l"}, "style":{ "margin-right":"20px"},
-				"childs": [6]
-			},
-			{
-				"id":5, "nature":"div", "attr":{"class":"float_l"},
-				"childs": [7, 8]
-			},
-			{
-				"id":6, "nature":"img", "attr":{"src":"dom.jpg", "width":115}
-			},
-			{"id":7, "nature":"h2", "value":"Dominique Roduit"},
-			{"id":8, "nature":"h5", "value":"EPFL"}
+			   }
+			}
          ]
       },
       {
          "id":"page2",
+		 "title":"Jolie scene 2",
+		 "style": {
+			"background":"#ffffce"
+		  },
          "sprites":[
             {
                "id":1,
@@ -82,10 +59,8 @@
 					"width":854,
 					"height":480
 			   },
-			   "style":{},
 				"eventProperties":{
-					"endDuration":true,
-					"timer":20
+					"endDuration": { "timer":5 }
 				}
             },
 			{
@@ -96,10 +71,8 @@
 					"width":547,
 					"height":523
 			   },
-				"style":{},
-				"eventProperties":{
-					"click":true
-				}
+			   "style": { "border-radius":"8px", "transition":"all 0.2s linear", "text-align":"center" },
+			   "hover": { "opacity": 0.8, "border":"4px solid #000"}
 			}
          ]
       }
@@ -110,29 +83,28 @@
          "associationIn":{
             "id":"0000",
             "regles":[
-               {
-                  "id":"00000",
-                  "sprites":["img2.click"],
-                  "scenes":["1"]
-               },
-               {
-                  "id":"00001",
-                  "sprites":["video1.end"],
-                  "scenes":["1"]
-               }
+               {"id":"00000", "sprites":["1.endDuration", "2.click"], "scenes":["page1"] }
             ]
          },
          "associationOut":{
             "id":"0100",
             "regles":[
-               {
-                  "id":"000010",
-                  "scenes":["2"]
-               },
-			   {
-                  "id":"000011",
-                  "scenes":["2"]
-               }
+               { "id":"00000", "scenes":["page2"] }
+            ]
+         }
+      },
+	  {
+         "id":"trans2",
+         "associationIn":{
+            "id":"0000",
+            "regles":[
+			   {"id":"00010", "sprites":["1.endDuration", "2.dblclick"], "scenes":["page2"] }
+            ]
+         },
+         "associationOut":{
+            "id":"0100",
+            "regles":[
+			   { "id":"00010", "scenes":["page1"] }
             ]
          }
       }
