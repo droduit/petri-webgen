@@ -43,26 +43,6 @@ class Scene {
 		}
 	}
 	
-	function traverseTree() {
-        debug($this->childsIds);
-	    foreach($this->sprites as $s) {
-            
-	        if($s->getChildsIds() == null) { continue; }
-	        $tmpChilds = $s->getChilds();
-
-	        while(count($tmpChilds) > 0) {
-	            $child = array_shift($tmpChilds);
-	            debug($child->getId());
-	            
-	            $childs = array_reverse($child->getChilds());
-                for($i = 0; $i < count($childs); $i++) {
-                    array_unshift($tmpChilds, $childs[$i]);
-                }     
-	        }
-	        debug($tmpChilds);
-	    }
-	}
-	
 	function getCSS() {
 		global $CSS_STYLES;
 		$htmlProp = "<style>";
@@ -142,5 +122,10 @@ class Scene {
 	function getTitle() { return $this->title; }
 	function debug() { echo "SCENE : ".$this->id.'<hr><pre>'; print_r($this); echo '</pre><hr><br>'; }
 
+	function processSpritesChilds() {
+	    foreach($this->sprites as $sprite) {
+	        $sprite->setAllChildsIds($sprite->computeAllChildsIds());
+	    }
+	}
 }
 ?>

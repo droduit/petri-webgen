@@ -8,6 +8,7 @@ foreach($petri['scenes'] as $s) {
     $scene = new Scene($s);
     // Sprites --------------------------------
     foreach($s['sprites'] as $sprite) {
+        
         // Fetch de tous les tableaux
         $props = array();
         foreach($SPRITE_ATTR_TO_FETCH as $attrName) {
@@ -15,16 +16,28 @@ foreach($petri['scenes'] as $s) {
                 $props[$attrName] = $sprite[$attrName];
             }
         }
-       
-        $value = isset($sprite['value']) ? $sprite['value'] : NULL;
-        $childsId = (count($sprite['childs']) == 0) ? null : $sprite['childs'];
-  
-        $newSprite = new Sprite($sprite['nature'], $sprite['id'], $value, $props, $childsId);
         
-        // Ajout du sprite à la scene ou dans son sprite parent
-        $scene->addSprite($newSprite);
+        if(isset($sprite['clone'])) {
+            $count = (isset($sprite['count'])) ? $sprite['count'] : 1;
+            
+            for($i = 0; $i < $count; ++$i) {
+                $newSprite = clone $scene->getSprite($sprite['clone']);
+                $newSprite->setId(uniqid($sprite['id']));
+                $newSprite->addProps($props);
+                $scene->addSprite($newSprite);
+            }
+        } else {
+            $value = isset($sprite['value']) ? $sprite['value'] : NULL;
+            $childsId = (count($sprite['childs']) == 0) ? null : $sprite['childs'];
+      
+            $newSprite = new Sprite($sprite['nature'], $sprite['id'], $value, $props, $childsId);
+            // Ajout du sprite à la scene
+            $scene->addSprite($newSprite);
+        }
+        
     }
-    $scene->traverseTree();
+    //$scene->traverseTree();
+    $scene->processSpritesChilds();
     
     // ----------------------------------------
     

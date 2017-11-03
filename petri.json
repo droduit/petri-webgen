@@ -6,14 +6,14 @@
 		 "mobile": true,
 		 "lang":"fr",
 		 "style": {
-			"background": "linear-gradient(to bottom,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%)",
+			"background": "#f8f8f8",
 			"color":"brown",
 			"font-size":"15px"
 		  },
 		  "css":{
-			".clear": { "clear":"both" },
-			".contact-box": { "border":"1px solid #ddd", "border-radius":"8px", "padding":"6px", "margin":"20px auto" },
-			".float_l": { "float":"left" },
+			".contact-box": { "color":"#020015", "border":"1px solid #ddd", "background":"linear-gradient(to bottom,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%)", "border-radius":"8px", "padding":"6px", "margin":"20px auto" },
+			".contact-box:hover": { "cursor":"pointer", "background":"linear-gradient(to top,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%)" },
+			".float_l": { "float":"left", "padding-right":"8px" },
 			"img": { "border-radius":"8px", "transition":"all 0.2s linear", "text-align":"center" },
 			"img:hover": { "opacity": 0.8 }
 		 },
@@ -43,7 +43,7 @@
 			},
 			{
 				"id": 3, "nature":"div",
-				"attr":{"class":"contact-box float_l"}, "childs": [4, 5]
+				"attr":{"class":"contact-box float_l clear"}, "childs": [4, 5]
 			},
 			{
 				"id":4, "nature":"div",
@@ -55,10 +55,11 @@
 				"childs": [7, 8]
 			},
 			{
-				"id":6, "nature":"img", "attr":{"src":"https://scontent-frx5-1.xx.fbcdn.net/v/t1.0-9/22045584_10214332095521962_2816500085493263649_n.jpg?oh=43eef7581d707362c13306aeac10e41a&oe=5A7A2AA9", "width":115}
+				"id":6, "nature":"img", "style":{"margin-right":"10px"}, "attr":{"src":"https://scontent-frx5-1.xx.fbcdn.net/v/t1.0-9/22045584_10214332095521962_2816500085493263649_n.jpg?oh=43eef7581d707362c13306aeac10e41a&oe=5A7A2AA9", "width":115}
 			},
 			{"id":7, "nature":"h2", "value":"Dominique Roduit"},
-			{"id":8, "nature":"h5", "value":"EPFL"}
+			{"id":8, "nature":"h5", "value":"EPFL"},
+			{"id":9, "clone":3, "style":{"border":"2px solid black"}, "count":2 }
          ]
       },
       {
@@ -101,7 +102,7 @@
          "associationIn":{
             "id":"0000",
             "regles":[
-               {"id":"00000", "sprites":["1.endDuration", "2.click"], "scenes":["page1"] }
+               {"id":"00000", "sprites":["1.endDuration", "2.click", "3.click"], "scenes":["page1"] }
             ]
          },
          "associationOut":{

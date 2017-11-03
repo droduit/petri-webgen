@@ -7,6 +7,7 @@ class Sprite {
 	private $events;	
 	private $props;
 	private $childsId;
+	private $allChildsIds;
 	private $sceneParent;
 	private $jsAttached;
 		
@@ -26,9 +27,11 @@ class Sprite {
 		$this->jsAttached = "";
 	}
 	
+	function setId($id) { $this->id = $id; $this->name = getSpriteName($id); }
 	function getId() { return $this->id; }
 	function getName() { return $this->name; }
 	function getProps() { return $this->props; }
+	function addProps($props) { $this->props = array_merge($this->props, $props); }
 	function attachEvent($e) { $this->events[] = $e; $this->generateJS(); }
 	function getJS() { return $this->jsAttached; }
 	function getChildsIds() { return $this->childsId; }
@@ -48,37 +51,53 @@ class Sprite {
 	    return $childs;
 	}
 	
+	function setAllChildsIds($ids) {
+	    $this->allChildsIds = $ids;
+	}
+	
+	function getAllChildsIds() {
+	    return $this->allChildsIds;
+	}
+	
 	function getAllChildsInOrder() {
-	    if($this->getChildsIds() == null) { return null; }
-	    
-	    $tmpChilds = $this->getChilds();
-	    $allChilds = array($this);
-	    while(count($tmpChilds) > 0) {
-	        $child = array_shift($tmpChilds);
-	        array_push($allChilds, $child);
-	        //debug($child->getId());
-	        
-	        $childs = array_reverse($child->getChilds());
-	        for($i = 0; $i < count($childs); $i++) {
-	            array_unshift($tmpChilds, $childs[$i]);
-	        }
+	    $childsIds = $this->getAllChildsIds();
+	    if($childsIds == null) return null;  
+	    $allChilds = array();
+	    foreach($childsIds as $c) {
+	        array_push($allChilds, $this->getSceneParent()->getSprite($c));
 	    }
 	    return $allChilds;
 	}
 	
 	function getHTML() {
-	    // [0] = balises ouvrantes, [1] = balises fermantes
-		$html = array("","");
-		
-		$closeBuffer = "";
+		$html = "";
 		
 		$toRender = $this->getAllChildsInOrder();
+		
 		if($toRender == null) 
 		    $toRender = array($this);
 		
+		$lastChilds = array();
+		$onlySpritesWithChilds = array_filter($toRender, function($sprite){ return $sprite->getChildsIds() != null; });
+		foreach($onlySpritesWithChilds as $sprite) {
+		    $lastChildId = array_pop($sprite->getAllChildsIds());
+		    
+		    if(isset($lastChilds[$lastChildId])) {
+		        array_push($lastChilds[$lastChildId], $sprite->getId());
+		    } else {
+		      $lastChilds[$lastChildId] = array($sprite->getId());
+		    }
+		}
 		
+		foreach($lastChilds as $k => $v) {
+		    $lastChilds[$k] = array_reverse($v);
+		}
+
+
+		$closeBuffer = array();
 		foreach($toRender as $sprite) {
-		    debug("oOO : ".$sprite->getId());
+		    $currentId = $sprite->getId();
+		    
     		$elmType = $sprite->type;
     		
     		if($elmType == "video") {
@@ -92,25 +111,42 @@ class Sprite {
     		
     		$closingBalise = !in_array($elmType, array('img', 'input'));
     		
-    		$html[0] .= '<'.$elmType.' '
+    		$html .= '<'.$elmType.' '
     		            .$sprite->getHTMLAttributes().' '
-    		            .$sprite->getHTMLEvents()
-    					.' class="'.$sprite->name.'"';
+    		            .$sprite->getHTMLEvents();
     		
-    	   if($closingBalise) {
-    	       $html[0] .= '>'.$sprite->value;
-    	       
-    	       if(count($sprite->childIds) == 0) {
-    	           $html[0] .= '</'.$elmType.'>';
-    	       }
-    	   } else {
-    	       $html[0] .= empty($sprite->value) ? ' />' : ' value="'.$sprite->value.'" />';
-    	   }				
-    	    
+    		if(!array_key_exists('class', $sprite->props["attr"])) {
+    		    $html.= ' class="'.$sprite->name.'"';
+    		} else {
+    		    $html.= ' class="'.$sprite->name." ".$sprite->props["attr"]['class'].'"';
+    		}
+    		 
+			if($closingBalise) {
+			    $html .= '>'.$sprite->value;
+			    
+			    $closeBalise = '</'.$elmType.'>';
+			    if($sprite->getChildsIds() == null) {
+			        $html .= $closeBalise;
+			    } else {
+			        $closeBuffer[$currentId] = $closeBalise;
+			    }
+			} else {
+			    $html .= empty($sprite->value) ? ' />' : ' value="'.$sprite->value.'" />';
+			}
+			
+			
+			if(array_key_exists($currentId, $lastChilds)) {
+			    foreach($lastChilds[$currentId] as $idParentToClose) {
+			        $html .= $closeBuffer[$idParentToClose];
+			    }
+			}
+			
 		}
 		
-		return $html[0].$html[1];
+		return $html;
 	}
+	
+
 	
 	
 	function getHTMLAttributes() {
@@ -119,7 +155,8 @@ class Sprite {
 		
 		if(count($this->props['attr']) > 0) {
 			foreach($this->props['attr'] as $name => $val) {
-				$htmlAttrs .= $name."=\"".$val."\" ";
+				if($name != "class")
+			         $htmlAttrs .= $name."=\"".$val."\" ";
 			}
 		}
 		
@@ -130,14 +167,7 @@ class Sprite {
 		return $htmlAttrs;
 	}
 	
-	function getChildsHTML() {
-		$html = "";
-		foreach($this->childs as $child) {
-			$html .= $child->getHTML();
-		}
-		return $html;
-	}
-	
+
 	function getHTMLEvents() {
 		$htmlEvents = "";
 		foreach($this->events as $e) {
@@ -161,6 +191,26 @@ class Sprite {
 				break;
 			}
 		}
+	}
+	
+	// Ne devrait pas etre utilisé ! Utiliser le champ $this->allChilds a la place
+	function computeAllChildsIds() {
+	    if($this->getChildsIds() == null) { return null; }
+	    
+	    $tmpChilds = $this->getChilds();
+	    $allChilds = array($this->getId());
+	    
+	    while(count($tmpChilds) > 0) {
+	        $child = array_shift($tmpChilds);
+	        array_push($allChilds, $child->getId());
+	        //debug($child->getId());
+	        
+	        $childs = array_reverse($child->getChilds());
+	        foreach($childs as $c) {
+	            array_unshift($tmpChilds, $c);
+	        }
+	    }
+	    return $allChilds;
 	}
 	
 }
