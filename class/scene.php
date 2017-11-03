@@ -1,29 +1,38 @@
 <?php
 class Scene {
 	private $sceneArray;
-	
 	private $id;
 	private $title;
 	private $sprites;
+	private $childsIds;
 	
-
 	function __construct($scene=array()) {
 		$this->sceneArray = $scene;
 		
 		$this->id = $this->sceneArray['id'];	
 		$this->title = isset($scene['title']) ? $scene['title'] : $this->id;
 		$sprites = array();
+		
+		$this->childsIds = array();
+	}
+	
+	function setChildsIds($ids) {
+	    $this->childsIds = $ids;
 	}
 	
 	function addSprite($sprite) {
-		$this->sprites[$sprite->getId()] = $sprite;
+	    $sprite->setSceneParent($this);
+	    $this->sprites[$sprite->getId()] = $sprite;
+
+	    $childsIds = $sprite->getChildsIds();
+	    foreach($childsIds as $ci) {
+	       array_push($this->childsIds, $ci);
+	    }
 	}
 	
 	function getSprite($spriteId) {
-		if(isset($this->sprites[$spriteId])) 
-			return $this->sprites[$spriteId];
-		
-		return $this->sprites['s3'];
+		return (isset($this->sprites[$spriteId])) ? 
+		  $this->sprites[$spriteId] : null;
 	}
 	
 	function bindTransition($transition) {
@@ -32,6 +41,26 @@ class Scene {
 				$this->sprites[(string)$e->getElemTrigger()]->attachEvent($e);
 			}
 		}
+	}
+	
+	function traverseTree() {
+        debug($this->childsIds);
+	    foreach($this->sprites as $s) {
+            
+	        if($s->getChildsIds() == null) { continue; }
+	        $tmpChilds = $s->getChilds();
+
+	        while(count($tmpChilds) > 0) {
+	            $child = array_shift($tmpChilds);
+	            debug($child->getId());
+	            
+	            $childs = array_reverse($child->getChilds());
+                for($i = 0; $i < count($childs); $i++) {
+                    array_unshift($tmpChilds, $childs[$i]);
+                }     
+	        }
+	        debug($tmpChilds);
+	    }
 	}
 	
 	function getCSS() {
@@ -95,8 +124,12 @@ class Scene {
 	
 	function getHTMLContent() {
 		$html = "";
-		if(count($this->sprites) > 0) {
-			foreach($this->sprites as $sprite) {
+		$spritesToRender = array_filter($this->sprites, function($s){
+		    return !in_array($s->getId(), $this->childsIds);
+		});
+		
+		if(count($spritesToRender) > 0) {
+		    foreach($spritesToRender as $sprite) {
 				$html .= $sprite->getHTML();
 			}
 		}

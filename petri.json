@@ -6,7 +6,7 @@
 		 "mobile": true,
 		 "lang":"fr",
 		 "style": {
-			"background":"#ddd",
+			"background": "linear-gradient(to bottom,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%)",
 			"color":"brown",
 			"font-size":"15px"
 		  },
@@ -15,7 +15,7 @@
 			".contact-box": { "border":"1px solid #ddd", "border-radius":"8px", "padding":"6px", "margin":"20px auto" },
 			".float_l": { "float":"left" },
 			"img": { "border-radius":"8px", "transition":"all 0.2s linear", "text-align":"center" },
-			"img:hover": { "opacity": 0.8, "border":"4px solid #000"}
+			"img:hover": { "opacity": 0.8 }
 		 },
          "sprites":[
             {
@@ -37,11 +37,28 @@
 				"id":2,
 				"nature":"img",
 				"attr":{
-					"src":"chien.jpg",
-					"width":420,
-					"height":559
+					"src":"yunna.jpg",
+					"height":320
 			   }
-			}
+			},
+			{
+				"id": 3, "nature":"div",
+				"attr":{"class":"contact-box float_l"}, "childs": [4, 5]
+			},
+			{
+				"id":4, "nature":"div",
+				"attr":{"class":"float_l"}, "style":{ "margin-right":"20px"},
+				"childs": [6]
+			},
+			{
+				"id":5, "nature":"div", "attr":{"class":"float_l"},
+				"childs": [7, 8]
+			},
+			{
+				"id":6, "nature":"img", "attr":{"src":"https://scontent-frx5-1.xx.fbcdn.net/v/t1.0-9/22045584_10214332095521962_2816500085493263649_n.jpg?oh=43eef7581d707362c13306aeac10e41a&oe=5A7A2AA9", "width":115}
+			},
+			{"id":7, "nature":"h2", "value":"Dominique Roduit"},
+			{"id":8, "nature":"h5", "value":"EPFL"}
          ]
       },
       {

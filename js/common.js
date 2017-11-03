@@ -8,6 +8,10 @@ $(function(){
 			$('.content').html(html).fadeIn();
 			correctImg();
 		});
+	}).fail(function(jqXHR, err){
+		$('.content').fadeOut("fast", function(){
+			$('.content').html('<div class="error">'+err+'</div>').fadeIn();
+		});
 	});
 	
 	

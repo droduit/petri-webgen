@@ -1,51 +1,40 @@
 <?php 
-// Contains errors generated during the processing
+// Contains errors generated during the parsing
 $err = array();
 
-// Information processing ---------------------
-// Scenes
-$sceneArray = array();
+// Scenes =======================================================
+$sceneArray = array(); 
 foreach($petri['scenes'] as $s) {
     $scene = new Scene($s);
-    
-    // List of all child nodes of the scene
-    $child_nodes = array();
-    foreach($s['sprites'] as $sprite) {
-        if(isset($sprite['childs'])) {
-            foreach($sprite['childs'] as $c) {
-                $child_nodes[$c] = getSpriteName($sprite['id']);
-            }
-        }
-    }
-    
-    
     // Sprites --------------------------------
     foreach($s['sprites'] as $sprite) {
         // Fetch de tous les tableaux
         $props = array();
-        foreach($SPRITE_TAG_TO_FETCH as $attrName) {
+        foreach($SPRITE_ATTR_TO_FETCH as $attrName) {
             if(isset($sprite[$attrName])) {
                 $props[$attrName] = $sprite[$attrName];
             }
         }
-        
+       
         $value = isset($sprite['value']) ? $sprite['value'] : NULL;
-        $newSprite = new Sprite($sprite['nature'], $sprite['id'], $value, $props);
+        $childsId = (count($sprite['childs']) == 0) ? null : $sprite['childs'];
+  
+        $newSprite = new Sprite($sprite['nature'], $sprite['id'], $value, $props, $childsId);
         
         // Ajout du sprite à la scene ou dans son sprite parent
-        if(isset($child_nodes[$sprite['id']])) {
-            $scene->getSprite($child_nodes[$sprite['id']])->addChild($newSprite);
-        } else {
-            $scene->addSprite($newSprite);
-        }
+        $scene->addSprite($newSprite);
     }
-    // -----------------------------------------
+    $scene->traverseTree();
+    
+    // ----------------------------------------
     
     // Ajout de la scene
     $sceneArray[$s['id']] = $scene;
 }
+// ==============================================================
 
-// Transitions
+
+// Transitions ==================================================
 foreach($petri['transitions'] as $trans) {
     $assocOut = array();
     foreach($trans['associationOut']['regles'] as $aO) {
@@ -74,5 +63,5 @@ foreach($petri['transitions'] as $trans) {
         }
     }
 }
-// ------------------------------------------------------
+// ==============================================================
 ?>

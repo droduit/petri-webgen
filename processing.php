@@ -5,7 +5,7 @@ include_once('header.inc.php');
 $json = file_get_contents('petri.json');
 $petri = json_decode($json, true);
 
-include_once('engine.php');
+include_once('parser.php');
 
 // Physical files generation --------------------------
 if(count($err) == 0) {
@@ -35,7 +35,9 @@ if(count($err) > 0) {
 	<?php
 	echo '<ul class="files">';
 	foreach(getListDir(OUTPUT_DIR) as $f) {
-		echo '<a href="'.OUTPUT_DIR.$f.'"><li>'.$f.'</li></a>';
+	    if(strpos($f, ".html") !== false) {
+		  echo '<a href="'.OUTPUT_DIR.$f.'"><li>'.$f.'</li></a>';
+	   }
 	}
 	echo '</ul>';
 }
