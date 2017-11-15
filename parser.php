@@ -6,6 +6,7 @@ $err = array();
 $sceneArray = array(); 
 foreach($petri['scenes'] as $s) {
     $scene = new Scene($s);
+    
     // Sprites --------------------------------
     foreach($s['sprites'] as $sprite) {
         
@@ -77,4 +78,13 @@ foreach($petri['transitions'] as $trans) {
     }
 }
 // ==============================================================
+
+// Groupement des scenes dans des pages
+$pages = array();
+foreach($sceneArray as $s) {
+    if(!isset($pages[$s->getContainer()]) || !is_array($pages[$s->getContainer()])) {
+        $pages[$s->getContainer()] = array();
+    }
+    array_push($pages[$s->getContainer()], $s->getId());
+}
 ?>

@@ -5,6 +5,8 @@ class Scene {
 	private $title;
 	private $sprites;
 	private $childsIds;
+	private $container;
+	private $position;
 	
 	function __construct($scene=array()) {
 		$this->sceneArray = $scene;
@@ -14,6 +16,20 @@ class Scene {
 		$sprites = array();
 		
 		$this->childsIds = array();
+		$this->container = exist($scene, 'container', 1);
+		$this->position = exist($scene, 'position', null);
+	}
+	
+	function getContainer() {
+	   return $this->container;   
+	}
+	
+	function getPosition() {
+	    return $this->position;
+	}
+	
+	function setPosition($newPos) {
+	    $this->position = $newPos;
 	}
 	
 	function setChildsIds($ids) {
@@ -42,6 +58,7 @@ class Scene {
 			}
 		}
 	}
+	
 	
 	function getCSS() {
 		global $CSS_STYLES;

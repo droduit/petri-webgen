@@ -174,7 +174,7 @@ class Sprite {
 			switch($e->getEventType()) {
 				case "endDuration": break;
 				default:
-					$htmlEvents .= "on".$e->getEventType().'="document.location.href=\''.$e->getScenePost().'.html\'" ';
+					$htmlEvents .= "on".$e->getEventType().'="document.location.href=\'scene_'.$e->getScenePost().'.html\'" ';
 				break;
 			}
 		}

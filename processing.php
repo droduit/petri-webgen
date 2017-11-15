@@ -8,14 +8,48 @@ $petri = json_decode($json, true);
 include_once('parser.php');
 
 // Physical files generation --------------------------
+$fileList = array();
 if(count($err) == 0) {
-	$nFile = 0;
-	foreach($sceneArray as $scene) {
-		$content = getHeader($scene);
-		$content .= $scene->getHTMLContent();
-		$content .= getFooter();
-		createFile($content, $scene->getId());
-		$nFile++;
+	$nPage = 0;
+	$nScene = 0;
+	// On parcours chaque pages
+	foreach($pages as $containerId => $p) {
+
+	    if(count($p) == 1) {
+	        $scene = $sceneArray[$p[0]];
+	        $content = getHeader($scene);
+	        $content .= $scene->getHTMLContent();
+	        $content .= getFooter();
+	        $nScene++;
+	    } else {
+    	    // On créé un fichier pour chaque scene de la page
+    	    foreach($p as $scene) {
+    	      $s = $sceneArray[$scene];
+    	      $content = getHeader($s);
+    		  $content .= $s->getHTMLContent();
+    		  $content .= getFooter();
+    		  
+    		  $filename = SCENE_DIR."/scene_".$s->getId().'.html';
+    		  array_push($fileList, $filename);
+    		  createFile($filename, $content);
+    		  $nScene++;
+    	    }
+    	    
+    	    
+    	    $content = getHeader($sceneArray[$p[0]]);
+    	    foreach($p as $scene) {
+    	        $s = $sceneArray[$scene];
+    	        $content .= getFrame($s);
+    	    }
+    	    $content .= getFooter();
+	    }
+	    
+	    $filename = OUTPUT_DIR."/page_".$containerId.'.html';
+	    array_push($fileList, $filename);
+	    createFile($filename, $content);
+
+		$nPage++;
+		
 	}
 }
 // ---------------------------------------------------------
@@ -30,14 +64,12 @@ if(count($err) > 0) {
     echo '</ul>';
 } else {
     ?>
-	<div class="success"><b>Congrats!</b> Your Petri network was successfully converted into a brand new website!</div>
-	<div><img src="img/arrow-r.svg" width="16px" align-auto><?= $nFile ?> files generated</div>
+	<div class="success"><b>Congrats!</b> Your Petri network was successfully convertfiles files ed into a brand new website!</div>
+	<div><img src="img/arrow-r.svg" width="16px" align-auto><?= $nPage ?> pages containing <?= $nScene ?> scenes were generated</div>
 	<?php
 	echo '<ul class="files">';
-	foreach(getListDir(OUTPUT_DIR) as $f) {
-	    if(strpos($f, ".html") !== false) {
-		  echo '<a href="'.OUTPUT_DIR.$f.'"><li>'.$f.'</li></a>';
-	   }
+	foreach($fileList as $f) {
+        echo '<a href="'.$f.'"><li>'.str_replace(OUTPUT_DIR."/", '', $f).'</li></a>';
 	}
 	echo '</ul>';
 }

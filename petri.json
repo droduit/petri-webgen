@@ -17,6 +17,12 @@
 			"img": { "border-radius":"8px", "transition":"all 0.2s linear", "text-align":"center" },
 			"img:hover": { "opacity": 0.8 }
 		 },
+		 "container":1,
+		 "position": {
+		 	"bottom": 0,
+		 	"width": "100%",
+		 	"height": "50%"
+		 },
          "sprites":[
             {
                "id": 1,
@@ -68,6 +74,11 @@
 		 "style": {
 			"background":"#ffffce"
 		  },
+		 "container":1,
+		 "position": {
+		 	"y":0,
+		 	"height":"50%"
+		 },
          "sprites":[
             {
                "id":1,
@@ -93,6 +104,18 @@
 			   "style": { "border-radius":"8px", "transition":"all 0.2s linear", "text-align":"center" },
 			   "hover": { "opacity": 0.8, "border":"4px solid #000"}
 			}
+         ]
+      },
+      {
+         "id":"page3",
+		 "title":"Puissante page",
+		 "container":2,
+         "sprites":[
+            {
+               "id":1,
+               "nature":"p",
+               "value":"Petite page toute seule"
+            }
          ]
       }
    ],
