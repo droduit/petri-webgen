@@ -34,7 +34,7 @@ Ci-dessous, vous trouverez de plus amples informations concernant la significati
       <ul>
       <li><code>"id"</code> : Doit être le même pour l'associationOut lié à l'associationIn.</li>
       <li><code>"sprites"</code> : liste contenant les sprites déclencheurs de la transition et l'action qui va appeler l'assocaition out.<br>
-        <b>Exemple :</b> <code>"sprites":["1.endDuration", "2.click"]</code></li>
+        <b>Exemple :</b> <code>"sprites":["1.endDuration", "2.click"]</code><br>Ici, la fin de video du sprite avec l'identifiant 1 va déclencher la transition out, et la meme transition out sera egalement déclenchée par le clique sur le sprite avec l'identifiant 2.</li>
       <li><code>"scenes"</code> : décrit la ou les scenes sources contenant les éléments déclencheurs de la transition out.</li>
       </ul>
   </li>
@@ -44,3 +44,12 @@ Ci-dessous, vous trouverez de plus amples informations concernant la significati
 
 
 ### Associations Out
+"associationOut":{
+    "id":"identifiant unique de l'association out",
+    "regles":[ 
+       {
+          "id":"meme identifiant quee l'association in liée",
+          "scenes":["page2"] // La ou les destinations
+       }
+    ]
+ }
