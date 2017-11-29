@@ -1,21 +1,46 @@
 <?php
+/**
+ * Objet représentant une transition.
+ * Une transition contient les evenements d'une scene.
+ * @author Dominique Roduit
+ */
 class Transition {
+    /** int: Identifiant unique de la transition */
 	private $id;
-	private $idScenePost;
+	/** String: Identifiant de la scene de destination appelée par la transition */
+	//private $idScenePost;
+	/** Array<Event>: Evenements contenus dans cette transition */
 	private $events;
+	/** Array<String>: Id des iframes cibles dans lesquels charger la scene de destination */
+	private $targets;
 	
-	function __construct($id, $idScenePost, $events) {
+	/**
+	 * Construit une nouvelle transition contenant 
+	 */
+	function __construct($id, $idScenePost, $targets, $events) {
 		$this->id = $id;
 		$this->events = $events == null ? array() : $events;
-		$this->idScenePost = $idScenePost;
-		
+		//$this->idScenePost = $idScenePost;
+	    $this->targets = $targets;	
 	}
 	
+	/**
+	 * Ajout d'un évènement à la transition
+	 * @param (Event) $e : Evenement à ajouter à la transition
+	 */
 	function addEvent($e) {
-		$this->events[] = $e;
+	    $this->events[] = $e->setTargets($this->targets);
 	}
 	
+	/**
+	 * @return (Array<Event>) Liste des évènements de la transition
+	 */
 	function getEvents() { return $this->events; }
+	
+	/**
+	 * @return (Array<String>) Liste des cibles dans lesquels charger la prochaine scène
+	 */
+	//function getTargets() { return $this->targets; }
 
 }
 ?>

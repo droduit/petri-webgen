@@ -1,7 +1,7 @@
 {
 	"scenes":[
       {
-         "id":"page1",
+         "id":"scene1",
 		 "title":"Ma scene 1",
 		 "mobile": true,
 		 "lang":"fr",
@@ -10,6 +10,10 @@
 			"color":"brown",
 			"font-size":"15px"
 		  },
+		  "js": [
+		  	"$('.contact-box').css('display', 'none')",
+		  	"setTimeout(function() { $('.contact-box').slideDown(3000) }, 1000)"
+		  ],
 		  "css":{
 			".contact-box": { "color":"#020015", "border":"1px solid #ddd", "background":"linear-gradient(to bottom,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%)", "border-radius":"8px", "padding":"6px", "margin":"20px auto" },
 			".contact-box:hover": { "cursor":"pointer", "background":"linear-gradient(to top,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%)" },
@@ -69,7 +73,7 @@
          ]
       },
       {
-         "id":"page2",
+         "id":"scene2",
 		 "title":"Jolie scene 2",
 		 "style": {
 			"background":"#ffffce"
@@ -107,7 +111,7 @@
          ]
       },
       {
-         "id":"page3",
+         "id":"scene3",
 		 "title":"Puissante page",
 		 "container":2,
          "sprites":[
@@ -119,19 +123,49 @@
          ]
       }
    ],
+   "views":[
+   		{
+   			"id":"view1",
+   			"scenes":[
+   				{"frame-id":"frame1", "scene-id":"scene1", "position":{"x":0,"width":"50%"}},
+   				{"frame-id":"frame2", "scene-id":"scene2", "position":{"right":0,"width":"50%"}}
+   			]	
+   		},
+   		{
+   			"id":"view2",
+   			"scenes":[
+   				{"frame-id":"frame1", "scene-id":"scene3", "position":{"x":"25%", "y":0, "width":"50%", "height":"200px"}},
+   				{"frame-id":"frame2", "scene-id":"scene1", "position":{"x":"25%", "y":"210px", "width":"50%", "height":300}},
+   				{"frame-id":"frame3", "scene-id":"scene2", "position":{"x":"25%", "y":"420px", "width":"50%", "height":150}}
+   			]	
+   		},
+   		{
+   			"id":"view3",
+   			"scenes":[
+   				{"frame-id":"frame1", "scene-id":"scene1", "position":{"bottom": 0,"width": "100%","height": "50%"}},
+   				{"frame-id":"frame2", "scene-id":"scene2", "position":{"y":0,"height":"50%"}}
+   			]	
+   		}
+   ],
    "transitions":[
       {
          "id":"trans1",
          "associationIn":{
             "id":"0000",
             "regles":[
-               {"id":"00000", "sprites":["1.endDuration", "2.click", "3.click"], "scenes":["page1"] }
+               {"id":"00000", "sprites":["1.endDuration", "2.click", "3.click"], "scenes":["scene1"]  }
             ]
          },
          "associationOut":{
             "id":"0100",
             "regles":[
-               { "id":"00000", "scenes":["page2"] }
+               {
+	               "id":"00000",
+	               "dest": {
+		               "targets":["scene1"],
+		               "scenes":["scene2"]
+	               } 
+               }
             ]
          }
       },
@@ -140,13 +174,27 @@
          "associationIn":{
             "id":"0000",
             "regles":[
-			   {"id":"00010", "sprites":["1.endDuration", "2.dblclick"], "scenes":["page2"] }
+			   {"id":"00010", "sprites":["1.endDuration", "2.dblclick"], "scenes":["scene2"] },
+			   {"id":"00011", "sprites":["1.click"], "scenes":["scene2"]}
             ]
          },
          "associationOut":{
             "id":"0100",
             "regles":[
-			   { "id":"00010", "scenes":["page1"] }
+			   {
+				   "id":"00010",
+				   "dest": {
+				   		"targets":["scene1"],
+				   		"scenes":["scene1"]
+				   }
+			   },
+			   {
+			   		"id":"00011",
+			   		"dest":{
+			   			"targets":["scene3"],
+			   			"scenes":["scene3"]
+			   		}
+			   }
             ]
          }
       }

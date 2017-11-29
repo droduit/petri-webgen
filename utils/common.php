@@ -93,7 +93,7 @@ function getFrame($scene) {
         $position .= $k.":".$v.";";
     }
     
-    $c = '<iframe frameborder="0" style="z-index:0; '.$position.'" src="'.str_replace(OUTPUT_DIR."/", '', SCENE_DIR)."/scene_".$scene->getId().'.html'.'"></iframe>';
+    $c = '<iframe scene_id="'.$scene->getId().'" frameborder="0" style="z-index:0; '.$position.'" src="'.str_replace(OUTPUT_DIR."/", '', SCENE_DIR)."/scene_".$scene->getId().'.html'.'"></iframe>';
     return $c;
 }
 

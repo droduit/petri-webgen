@@ -4,8 +4,20 @@ $err = array();
 
 // Scenes =======================================================
 $sceneArray = array(); 
+
+// Détermine si un container contient une seul scene ou plusieurs scene
+$containers = array();
 foreach($petri['scenes'] as $s) {
-    $scene = new Scene($s);
+    if(array_key_exists($s['container'], $containers)) {
+        $containers[$s['container']]++;
+    } else {
+        $containers[$s['container']] = 1;
+    }
+}
+
+// On parcours chaque scenes
+foreach($petri['scenes'] as $s) {
+    $scene = new Scene($s, $containers[$s['container']] == 1);
     
     // Sprites --------------------------------
     foreach($s['sprites'] as $sprite) {
@@ -52,27 +64,41 @@ foreach($petri['scenes'] as $s) {
 foreach($petri['transitions'] as $trans) {
     $assocOut = array();
     foreach($trans['associationOut']['regles'] as $aO) {
-        $assocOut[$aO['id']] = $aO['scenes'];
+        $assocOut[$aO['id']] = $aO['dest'];
     }
     
     foreach($trans['associationIn']['regles'] as $aI) {
-        $sceneTo = $assocOut[$aI['id']][0];
+        $dest = $assocOut[$aI['id']];
+        
+        $targetsIds = $dest['targets'];
+        $targets = array();
+        foreach($targetsIds as $sceneTarg) {
+            $targets[] = $sceneArray[$sceneTarg];
+        }
+        
+        $sceneTo = $dest['scenes'][0];
         
         foreach($aI['scenes'] as $sceneFrom) {
-            $transition = new Transition($aI['id'], $sceneTo, null);
+            $transition = new Transition($aI['id'], $sceneTo, $targets, null);
             
+            // Creation des evenements pour chaque sprites de la scene
             foreach($aI['sprites'] as $sprite) {
                 $split = explode('.', $sprite);
                 if(count($split) != 2) {
                     $err[] = "La regle id=".$aI['id']." de la transition id=".$trans['id']." est malformée";
                 }
+               
                 $eventType = $split[1];
                 $elemTrigger = $split[0];
+                
                 $event = new Event($eventType, $elemTrigger);
                 $event->setScenePost($sceneTo);
+                
+                // Ajout de l'evenement à la transition
                 $transition->addEvent($event);
             }
             
+            // Attachenement de la transition à la scene
             $sceneArray[$sceneFrom]->bindTransition($transition);
         }
     }

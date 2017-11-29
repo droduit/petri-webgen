@@ -10,46 +10,41 @@ include_once('parser.php');
 // Physical files generation --------------------------
 $fileList = array();
 if(count($err) == 0) {
+    
 	$nPage = 0;
 	$nScene = 0;
 	// On parcours chaque pages
 	foreach($pages as $containerId => $p) {
 
-	    if(count($p) == 1) {
-	        $scene = $sceneArray[$p[0]];
-	        $content = getHeader($scene);
-	        $content .= $scene->getHTMLContent();
-	        $content .= getFooter();
-	        $nScene++;
-	    } else {
-    	    // On créé un fichier pour chaque scene de la page
-    	    foreach($p as $scene) {
-    	      $s = $sceneArray[$scene];
-    	      $content = getHeader($s);
-    		  $content .= $s->getHTMLContent();
-    		  $content .= getFooter();
-    		  
-    		  $filename = SCENE_DIR."/scene_".$s->getId().'.html';
-    		  array_push($fileList, $filename);
-    		  createFile($filename, $content);
-    		  $nScene++;
-    	    }
-    	    
-    	    
-    	    $content = getHeader($sceneArray[$p[0]]);
-    	    foreach($p as $scene) {
-    	        $s = $sceneArray[$scene];
-    	        $content .= getFrame($s);
-    	    }
-    	    $content .= getFooter();
+	    // On créé un fichier pour chaque scene de la page
+	    foreach($p as $scene) {
+	      $s = $sceneArray[$scene];
+	      $content = getHeader($s);
+		  $content .= $s->getHTMLContent();
+		  $content .= getFooter();
+		  
+		  $filename = SCENE_DIR."/scene_".$s->getId().'.html';
+		  array_push($fileList, $filename);
+		  createFile($filename, $content);
+		  $nScene++;
 	    }
 	    
-	    $filename = OUTPUT_DIR."/page_".$containerId.'.html';
-	    array_push($fileList, $filename);
-	    createFile($filename, $content);
-
-		$nPage++;
-		
+	    
+	    $content = getHeader($sceneArray[$p[0]]);
+	    foreach($p as $scene) {
+	        $s = $sceneArray[$scene];
+	        $content .= getFrame($s);
+	    }
+	    $content .= getFooter();
+	    
+	    
+	    if(count($p) > 1) {
+    	    $filename = OUTPUT_DIR."/page_".$containerId.'.html';
+    	    array_push($fileList, $filename);
+    	    createFile($filename, $content);
+    	    $nPage++;
+	    }
+	
 	}
 }
 // ---------------------------------------------------------
