@@ -31,6 +31,9 @@ function getListDir($dir) {
 function debug($o) {
 	if(is_bool($o)) 
 	    $o = $o ? "true" : "false";
+	if(is_null($o))
+	    $o = "NULL";
+	
     echo '<hr><pre>';
 	print_r($o);
 	echo'</pre><hr><br>';
@@ -96,6 +99,38 @@ function getHeaderView($title) {
 		'<style>body { margin:0; font-family: sans-serif; } a { text-decoration: none; color: black; } .clear { clear:both }</style>
 	</head>
 	<body>';
+}
+
+/**
+ * @param ($index['type'], $index['id']) : Type et id de l'index
+ * @return Contenu de la page index
+ */
+function getContentIndex($index) {
+    global $debug_mode; 
+
+    $filename = ($index['type'] == 'scene') ? getSceneFilename($index['id']) : getViewFilename($index['id']);
+    
+    return '<!DOCTYPE HTML>
+	<html>
+	<head>
+		<title>Chargement...</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,user-scalable=0">
+		<script src="https://code.jquery.com/jquery-1.11.3.js"></script>'.
+		($debug_mode ? '<script src="../js/debug.js"></script><link rel="stylesheet" href="../css/debug.css" type="text/css">' : '').
+		'<style>body { margin:0; font-family: sans-serif; } a { text-decoration: none; color: black; } .clear { clear:both }</style>
+        <script>
+        $(function(){
+            $.post("'.$filename.'", {index:1}, function(html){
+                $("body").html(html);
+            }); 
+        });
+        </script>
+	</head>
+    	<body>
+            <div style="text-align:center; margin-top: 250px">Chargement ...</div>
+        </body>
+    </html>';
 }
 
 function getFooter() {

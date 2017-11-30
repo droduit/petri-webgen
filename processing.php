@@ -45,6 +45,14 @@ if(count($err) == 0) {
 	    
 	    $nPages++;
 	}
+	
+	// Création de la page d'index
+	if($index != NULL) {
+	    $content = getContentIndex($index);
+    	$filename = OUTPUT_DIR."/index.html";
+    	array_push($fileList, $filename);
+    	createFile($filename, $content);
+	}
 }
 // ---------------------------------------------------------
 
@@ -69,7 +77,12 @@ if(count($err) > 0) {
 	foreach($fileList as $f) {
 	    $filename = str_replace(OUTPUT_DIR."/", '', $f);
 	    $typeF = explode("_", $filename)[0];
-	   
+	    if($typeF != "index.html") {
+	        $typeF .= "s";
+	    } else {
+	       $typeF = explode(".", $typeF)[0];    
+	    }
+	    
 	    if(!isset($typesFile[$typeF])) {
 	        $typesFile[$typeF] = 1;
 	    } else {
@@ -80,7 +93,7 @@ if(count($err) > 0) {
 	}
 	
 	foreach($typesFile as $tf => $number) {
-	   echo '<a href="#'.$tf.'" type="'.$tf.'"><li style="text-transform:capitalize">'.$tf."s (".$number.")</li></a>";
+	   echo '<a href="#'.$tf.'" type="'.$tf.'"><li style="text-transform:capitalize">'.$tf." (".$number.")</li></a>";
 	}	
 
 	echo '</ul>';

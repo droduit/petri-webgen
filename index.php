@@ -1,5 +1,5 @@
 <?php 
-$debug_mode = false;
+$debug_mode = true;
 include_once('header.inc.php');
 ?>
 <!DOCTYPE HTML>

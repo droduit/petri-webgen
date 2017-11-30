@@ -20,7 +20,7 @@ $(function(){
 	
 	$('body').on('click', 'a[type]', function(){
 		var type = $(this).attr("type");
-		$('.titleCat').html(type+"s");
+		$('.titleCat').html(type);
 		$('ul.files a').fadeOut("fast", function(){
 			setTimeout(function(){
 				$('a[typefile="'+type+'"], .bt-back, .titleCat').fadeIn("fast");

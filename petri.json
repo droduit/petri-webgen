@@ -1,4 +1,8 @@
-{
+{	
+	"index": {
+		"type":"view",
+		"id":"view2"
+	},
 	"scenes":[
       {
          "id":"scene1",
