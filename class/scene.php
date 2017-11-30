@@ -18,54 +18,20 @@ class Scene {
 	private $sprites;
 	/** Array<String>: Identifiants des sprites contenus dans la scene */
 	private $childsIds;
-	/** int: Identifiant de la page contenant cette scene */
-	private $container;
-	/** Array<any>: CSS de positionnement de la scene (iframe) dans la page container */
-	private $position;
-	/** Boolean : Défini si la scene est une page ou si elle est contenu dans une page */
-	private $isContainer;
+
 	
 	/**
 	 * Construit une nouvelle scene
 	 * @param scene:Array<any> Objet brut complet tel que recu par le fichier json
 	 */
-	function __construct($scene=array(), $isContainer=false) {
+	function __construct($scene=array()) {
 		$this->sceneArray = $scene;
 		
 		$this->id = $this->sceneArray['id'];	
 		$this->title = isset($scene['title']) ? $scene['title'] : $this->id;
-		$sprites = array();
+		$this->sprites = array();
 		
 		$this->childsIds = array();
-		$this->container = exist($scene, 'container', 1);
-		$this->position = exist($scene, 'position', null);
-		$this->isContainer = $isContainer;
-	}
-	
-	/**
-	 * @return Si cette scene est une page en elle meme ou si elle fait partie d'un document contenant plusieurs scenes
-	 */
-	function isContainer() {
-	    return $this->isContainer;
-	}
-	
-	/**
-	 * @return L'identifiant du conteneur de la scene
-	 */
-	function getContainer() {
-	   return $this->container;   
-	}
-    /**
-     * @return Array<String> position CSS de la scene (iframe) dans son conteneur
-     */	
-	function getPosition() {
-	    return $this->position;
-	}
-	/**
-	 * Défini la position CSS de la scene (iframe) dans son conteneur
-	 */
-	function setPosition($newPos) {
-	    $this->position = $newPos;
 	}
 	
 	/**
@@ -221,7 +187,7 @@ class Scene {
 	/**
 	 * Affiche une emprunte de cet objet scene de manière formatée dans un but de debuggage
 	 */
-	function debug() { echo "SCENE : ".$this->id.' | Container:'.($this->isContainer ? "true" : "false").'<hr><pre>'; print_r($this); echo '</pre><hr><br>'; }
+	function debug() { echo "SCENE : ".$this->id.' <hr><pre>'; print_r($this); echo '</pre><hr><br>'; }
     /**
      * Attribue à chaque sprite de la scene leurs enfants
      * respectifs en appelant leur fonction de calcul des enfants 

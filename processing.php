@@ -1,6 +1,10 @@
 <?php
 include_once('header.inc.php');
 
+if(isset($_POST['debug']) && $_POST['debug'] == 1) {
+    $debug_mode = true;
+}
+
 // Chargement du fichier
 $json = file_get_contents('petri.json');
 $petri = json_decode($json, true);
@@ -11,40 +15,33 @@ include_once('parser.php');
 $fileList = array();
 if(count($err) == 0) {
     
-	$nPage = 0;
-	$nScene = 0;
-	// On parcours chaque pages
-	foreach($pages as $containerId => $p) {
-
-	    // On créé un fichier pour chaque scene de la page
-	    foreach($p as $scene) {
-	      $s = $sceneArray[$scene];
-	      $content = getHeader($s);
-		  $content .= $s->getHTMLContent();
-		  $content .= getFooter();
-		  
-		  $filename = SCENE_DIR."/scene_".$s->getId().'.html';
-		  array_push($fileList, $filename);
-		  createFile($filename, $content);
-		  $nScene++;
-	    }
-	    
-	    
-	    $content = getHeader($sceneArray[$p[0]]);
-	    foreach($p as $scene) {
-	        $s = $sceneArray[$scene];
-	        $content .= getFrame($s);
-	    }
+	$nScenes = 0;
+	// On créé un fichier pour chaque scenes
+	foreach($sceneArray as $scene) {
+	    $content = getHeaderScene($scene);
+	    $content .= $scene->getHTMLContent();
 	    $content .= getFooter();
 	    
+	    $filename = SCENE_DIR."/".getSceneFilename($scene->getId());
+	    array_push($fileList, $filename);
+	    createFile($filename, $content);
 	    
-	    if(count($p) > 1) {
-    	    $filename = OUTPUT_DIR."/page_".$containerId.'.html';
-    	    array_push($fileList, $filename);
-    	    createFile($filename, $content);
-    	    $nPage++;
-	    }
+	    $nScenes++;
+	}
 	
+	$nViews = 0;
+	// On créé un fichier pour chaque vues
+	foreach($views as $view) {
+	    $content = getHeaderView($view->getTitle());
+	    $content .= $view->getFramesHTML();	    
+	    $content .= getFooter();
+	    
+	    // On créé un fichier pour chaque vues
+	    $filename = OUTPUT_DIR."/".getViewFilename($view->getId());
+	    array_push($fileList, $filename);
+	    createFile($filename, $content);
+	    
+	    $nPages++;
 	}
 }
 // ---------------------------------------------------------
@@ -60,7 +57,7 @@ if(count($err) > 0) {
 } else {
     ?>
 	<div class="success"><b>Congrats!</b> Your Petri network was successfully convertfiles files ed into a brand new website!</div>
-	<div><img src="img/arrow-r.svg" width="16px" align-auto><?= $nPage ?> pages containing <?= $nScene ?> scenes were generated</div>
+	<div><img src="img/arrow-r.svg" width="16px" align-auto><?= $nPages ?> views and <?= $nScenes ?> scenes were generated</div>
 	<?php
 	echo '<ul class="files">';
 	foreach($fileList as $f) {

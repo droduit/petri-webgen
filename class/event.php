@@ -8,8 +8,10 @@ class Event {
 	private $eventType;
 	/** String: Element qui déclenche cet évenement */
 	private $elemTrigger;
-	/** String: Id de la scene de destination appelée par l'evenement */
-	private $scenePost;
+	/** String: Id de la scene ou de la vue de destination appelée par l'evenement */
+	private $idPage;
+	/** String: Type de page (scene ou vue) appelée par l'évenement */
+	private $typePage;
 	/** Array<String>: Id des frames dans lesquelles charger la scene de destination */
 	private $targets;
 	
@@ -33,21 +35,37 @@ class Event {
 	 */
 	function getElemTrigger() { return $this->elemTrigger; }
 	/**
-	 * @return (String) Identifiant unique de la scene à charger au déclenchement de l'évènement
+	 * @return (String) Identifiant unique de la scene ou vue à charger au déclenchement de l'évènement
 	 */
-	function getScenePost() { return $this->scenePost; }
+	function getIdPage() { return $this->idPage; }
+	/**
+	 * @return (String) Type de page (scene ou vue) appelée par l'evenement.
+	 */
+	function getTypePage() { return $this->typePage; }
 	/**
 	 * @return (Array<String>) Iframes cibles dans lesquels charger la prochaine scène
 	 */
 	function getTargets() { return $this->targets; }
 	
 	/**
+	 * @return Le nom de fichier selon si la destination est une vue ou une scene
+	 */
+	function getDestFilename() {
+	    if($this->getTypePage() == "view")
+	        return getViewFilename($this->getIdPage());
+	    else
+	        return getSceneFilename($this->getIdPage());
+	}
+	
+	/**
 	 * Défini la scene suivante à charger lorsque l'evenement est déclenché.
 	 * @return L'objet modifié pour pouvoir effectuer des appels en chaine
 	 */
-	function setScenePost($post) {
-		$this->scenePost = $post;
-		return $this;
+	function setDestTypePage($type) {
+	    $this->typePage = $type;
+	}
+	function setDestId($id) {
+	    $this->idPage = $id;
 	}
 	/**
 	 * Défini les iframe cibles dans lesquels charger la scene suivante définie par scenePost

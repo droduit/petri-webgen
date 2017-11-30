@@ -5,19 +5,9 @@ $err = array();
 // Scenes =======================================================
 $sceneArray = array(); 
 
-// Détermine si un container contient une seul scene ou plusieurs scene
-$containers = array();
-foreach($petri['scenes'] as $s) {
-    if(array_key_exists($s['container'], $containers)) {
-        $containers[$s['container']]++;
-    } else {
-        $containers[$s['container']] = 1;
-    }
-}
-
 // On parcours chaque scenes
 foreach($petri['scenes'] as $s) {
-    $scene = new Scene($s, $containers[$s['container']] == 1);
+    $scene = new Scene($s);
     
     // Sprites --------------------------------
     foreach($s['sprites'] as $sprite) {
@@ -49,13 +39,26 @@ foreach($petri['scenes'] as $s) {
         }
         
     }
-    //$scene->traverseTree();
-    $scene->processSpritesChilds();
     
+    $scene->processSpritesChilds();
     // ----------------------------------------
     
     // Ajout de la scene
     $sceneArray[$s['id']] = $scene;
+}
+// ==============================================================
+
+
+// Groupement des scenes dans des pages =========================
+$views = array();
+// Pour chaque vue, on utilise le tableau avec les scene ayant le flag isInView=true
+foreach($petri['views'] as $view) {
+    $viewObj = new View($view['id'], $view['title']);
+    
+    foreach($view['scenes'] as $frame) {
+        $viewObj->addScene($frame['frame-id'], $sceneArray[$frame['scene-id']], $frame['style']);
+    }
+    array_push($views, $viewObj);
 }
 // ==============================================================
 
@@ -70,16 +73,9 @@ foreach($petri['transitions'] as $trans) {
     foreach($trans['associationIn']['regles'] as $aI) {
         $dest = $assocOut[$aI['id']];
         
-        $targetsIds = $dest['targets'];
-        $targets = array();
-        foreach($targetsIds as $sceneTarg) {
-            $targets[] = $sceneArray[$sceneTarg];
-        }
-        
-        $sceneTo = $dest['scenes'][0];
         
         foreach($aI['scenes'] as $sceneFrom) {
-            $transition = new Transition($aI['id'], $sceneTo, $targets, null);
+            $transition = new Transition($aI['id'], null);
             
             // Creation des evenements pour chaque sprites de la scene
             foreach($aI['sprites'] as $sprite) {
@@ -92,7 +88,10 @@ foreach($petri['transitions'] as $trans) {
                 $elemTrigger = $split[0];
                 
                 $event = new Event($eventType, $elemTrigger);
-                $event->setScenePost($sceneTo);
+                $sceneDst = $dest['scene'];
+                $event->setDestTypePage($sceneDst['type']);
+                $event->setDestId($sceneDst['id']);
+                $event->setTargets($dest['targets']);
                 
                 // Ajout de l'evenement à la transition
                 $transition->addEvent($event);
@@ -105,12 +104,4 @@ foreach($petri['transitions'] as $trans) {
 }
 // ==============================================================
 
-// Groupement des scenes dans des pages
-$pages = array();
-foreach($sceneArray as $s) {
-    if(!isset($pages[$s->getContainer()]) || !is_array($pages[$s->getContainer()])) {
-        $pages[$s->getContainer()] = array();
-    }
-    array_push($pages[$s->getContainer()], $s->getId());
-}
 ?>

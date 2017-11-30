@@ -69,10 +69,6 @@ class Sprite {
 	    return $this->sceneParent;
 	}
 	
-	function getContainer() {
-	    return $this->getSceneParent()->getContainer();
-	}
-	
 	function getChildsIds() { return $this->childsId; }
 	
 	function getChilds() {
@@ -165,7 +161,8 @@ class Sprite {
     		} else {
     		    $html.= ' class="'.$sprite->name." ".$sprite->props["attr"]['class'].'"';
     		}
-    		 
+    		
+    
 			if($closingBalise) {
 			    $html .= '>'.$sprite->value;
 			    
@@ -187,6 +184,7 @@ class Sprite {
 			}
 			
 		}
+	
 		
 		return $html;
 	}
@@ -223,48 +221,54 @@ class Sprite {
 	function getJSEvents() { 
 		$jsEvents = "";
 		
+		// La variable javascript isInView indique si la scene contenant ce sprite
+		// se trouve dans une vue ou pas.
+		
 		foreach($this->events as $e) {
-		    foreach($e->getTargets() as $target) {
-		        $selector = ".".$this->getName();
-    		    $destSrc = 'scene_'.$e->getScenePost().'.html';
-    		    $actionName = $e->getEventType();
-    		    $targetCode = "document.location.href";
-    		    $code = "";
-    		    
-    		    $targetIsInSameContainer = in_array($target, $this->getSceneParent()->getSpritesIds());	    
-    		    
-    		    
-    		    // La page ne doit pas être chargée dans l'iframe dans laquelle on est
-    		    if($target != $this->getId()) {   
-    		        
-    		        // Modification du type de destination du au fait que certaines scenes sont des pages
-    		        // Si la target est un conteneur, le nom est différent
-    		        if(!$this->getSceneParent()->isContainer() && $target->isContainer()) {
-    		            $destSrc = "../page_".$target->getContainer().".html";
-    		        }
-    		        
-    		        if($targetIsInSameContainer) { // The target est une iframe de la meme page
-        		        $code = "$('iframe[scene_id=\"".$target."\"]', parent.document)";
-        		        $code.= ".attr('src', '".$destSrc."'); ";
-        		    } else { // The target is in an external page
-        		        $targetCode = "parent.".$targetCode;
-        		    }
-    		    }
-    		    
-    		    $code = $code == "" ? $targetCode."='".$destSrc."';" : $code;
-    		    
-    		    // $('video').on('ended', function(){ ... });
-    		    // play, pause, ended
-    		    // Seulement de l'interprétation de noms
-    		    switch($e->getEventType()) {
-    				case "endDuration": $actionName = "ended"; break;
-    				default: break;
-    			}
-    			
-    			$jsEvents .= "$('".$selector."').on('".$actionName."', function(){";
-    			$jsEvents .=     $code;
-    			$jsEvents .= "}); ";
+		    $selector = ".".$this->getName();
+		    $destSrc = $e->getDestFilename();
+		    $actionName = $e->getEventType();
+		    $targetCode = "document.location.href";
+		    $code = "";
+		    
+		    // Si on charge dans une nouvelle page
+		    if(count($e->getTargets()) == 0) {
+		        $code = 'if(isInView) {'. // la scene est dans une vue et on veut atteindre une nouvelle page
+                            'parent.'.$targetCode."='".$destSrc."';".  
+                        '} else {'.
+                            $targetCode."='".$destSrc."';".
+		                '}';
 		    }
+		    // Si on charge dans une ou plusieurs iframe(s) de la meme page
+		    else {
+		        $code .= "if(isInView) { ";
+    		    foreach($e->getTargets() as $target) {
+    		        $code .=
+    		        // Si on charge dans la frame dans laquelle on est
+        		    'if($("iframe[petri][src*=\''.$this->getSceneParent()->getId().'\']", parent.document).attr("id") == "'.$target.'") {'.
+		                  $targetCode."='".$destSrc."';".
+		            // Si on charge dans une autre frame
+		            '} else {'.
+		                  "$('iframe[petri][id=".$target."]', parent.document)".
+		                  ".attr('src', '".$destSrc."'); ".
+		            '}';
+    		    }
+    		    $code .= "} else {";
+    		    $code .=      $targetCode."='".$destSrc."';";
+    		    $code .= "}";
+            }
+            
+            // $('video').on('ended', function(){ ... });
+            // play, pause, ended
+            // Seulement de l'interprétation de noms
+            switch($e->getEventType()) {
+                case "endDuration": $actionName = "ended"; break;
+                default: break;
+            }
+            
+            $jsEvents .= "$('".$selector."').on('".$actionName."', function(){";
+            $jsEvents .=     $code;
+            $jsEvents .= "}); ";
 		}
 		
 		

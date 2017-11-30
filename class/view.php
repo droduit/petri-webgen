@@ -104,7 +104,7 @@ class View {
 	    }
 	    
 	    return
-   	     '<iframe '.
+   	     '<iframe petri '.
    	     'id="'.$frameId.'" '.
          'frameborder="0" '.
          'style="z-index:0; '.$positionCss.'" '.

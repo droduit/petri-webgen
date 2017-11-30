@@ -30,11 +30,6 @@ include_once('header.inc.php');
 		
 		<div class="copyright">Dominique Roduit - EPFL &copy; <?= date('Y') ?></div>
 		
-		
-		<?php if($debug && isset($_GET['reload'])) { ?>
-			<script>$(function(){ document.location.href="generated/<?= $_GET['reload'] ?>.html"; });</script>
-		<?php } ?>
-		
 	</body>
 	
 </html>

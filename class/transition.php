@@ -11,17 +11,15 @@ class Transition {
 	//private $idScenePost;
 	/** Array<Event>: Evenements contenus dans cette transition */
 	private $events;
-	/** Array<String>: Id des iframes cibles dans lesquels charger la scene de destination */
-	private $targets;
+
 	
 	/**
 	 * Construit une nouvelle transition contenant 
 	 */
-	function __construct($id, $idScenePost, $targets, $events) {
+	function __construct($id, $events) {
 		$this->id = $id;
 		$this->events = $events == null ? array() : $events;
 		//$this->idScenePost = $idScenePost;
-	    $this->targets = $targets;	
 	}
 	
 	/**
@@ -29,7 +27,7 @@ class Transition {
 	 * @param (Event) $e : Evenement à ajouter à la transition
 	 */
 	function addEvent($e) {
-	    $this->events[] = $e->setTargets($this->targets);
+	    $this->events[] = $e;
 	}
 	
 	/**
