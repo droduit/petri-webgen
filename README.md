@@ -128,3 +128,11 @@ Ci-dessous, vous trouverez de plus amples informations concernant la significati
     ]
  }
 </pre>
+
+
+## Infos développeur
+Un mode debug existe. Il suffit de passer la variable <code>$debug_mode = true;</code> sur la page <code>index.php</php> et les outils de debuggage seront disponibles sur toutes les pages générées. La génération en mode normal appel les fichiers PHP de manière asynchrone de manière à afficher une interface user-friendly munie d'un loader. Le mode debug ne génère pas d'appel asynchrone en javascript, les pages PHP sont inclues directement. De cette manière tous les messages d'erreurs eventuels peuvent être affichés. Le mode debug peut être conservé même lorsque le logiciel est prêt à être publié. Il suffit alors de passer la variable $debug_mode à <code>false</code> et aucune trace du mode debug ne sera visible.
+
+
+
+
