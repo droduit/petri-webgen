@@ -1,5 +1,5 @@
 <?php 
-$debug_mode = true;
+$debug_mode = false;
 include_once('header.inc.php');
 ?>
 <!DOCTYPE HTML>
@@ -28,6 +28,7 @@ include_once('header.inc.php');
     		</div>
 		</div>
 		
+		<?php if($debug_mode) { ?><div class="debug-message">Debug mode</div><?php } ?>
 		<div class="copyright">Dominique Roduit - EPFL &copy; <?= date('Y') ?></div>
 		
 	</body>

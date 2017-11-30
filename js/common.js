@@ -18,6 +18,24 @@ $(function(){
 		});
 	}
 	
+	$('body').on('click', 'a[type]', function(){
+		var type = $(this).attr("type");
+		$('.titleCat').html(type+"s");
+		$('ul.files a').fadeOut("fast", function(){
+			setTimeout(function(){
+				$('a[typefile="'+type+'"], .bt-back, .titleCat').fadeIn("fast");
+			}, 200);
+		});
+		return false;
+	});
+	
+	$('body').on('click', '.bt-back', function(){
+		$('ul.files a, .bt-back, .titleCat').fadeOut("fast", function(){
+			setTimeout(function(){
+				$('a[type]').fadeIn();
+			}, 200);
+		});
+	});
 	
 });
 

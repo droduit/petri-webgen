@@ -41,10 +41,13 @@ a, a:hover, a:active { color: black; text-decoration: none; }
 	background: white;
 	border-radius: 0 0 10px 10px;
 }
-.copyright {
+.copyright, .debug-message {
 	text-align: center;
 	font-size: 9px;
 	margin-top: 5px;
+}
+.debug-message {
+	color: red;
 }
 .success, .error {
 	padding: 6px 4px;
@@ -81,4 +84,22 @@ img.loader {
 	display: block;
 	margin: 15px auto;
 	width: 60px;
+}
+.bt-back {
+	background: #f6f6f6;
+	cursor:pointer;
+	padding: 4px;
+	transition: all linear 0.2s;
+	display: none;
+}
+.bt-back:hover {
+	background: #eee;
+}
+.titleCat {
+	display:none;
+	margin-top: 8px;
+	background: #d9d9d9;
+	padding:6px 8px;
+	font-weight: bold;
+	text-transform:capitalize
 }
