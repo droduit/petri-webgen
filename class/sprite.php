@@ -1,6 +1,7 @@
 <?php
 /**
  * Représente un élément HTML contenu dans une Scene
+ * 
  * @author Dominique Roduit
  */
 class Sprite {
@@ -45,13 +46,37 @@ class Sprite {
 		$this->events = array();
 	}
 	
-	function setId($id) { $this->id = $id; $this->name = getSpriteName($id); }
+	/**
+	 * Défini l'identifiant du sprite
+	 * @param (String) $id : Identifiant unique du sprite dans la page
+	 */
+	function setId($id) {
+	    $this->id = $id;
+	    $this->name = getSpriteName($id);
+	}
+	/**
+	 * @return (String) L'identifiant du sprite dans la scène
+	 */
 	function getId() { return $this->id; }
 	
+	/**
+	 * @deprecated
+	 * @return Le nom du sprite dans la scène
+	 */
 	function getName() { return $this->name; }
 	
+	/**
+	 * @return Les attributs HTML associés au sprite
+	 */
 	function getProps() { return $this->props; }
-	function addProps($props) { $this->props = array_merge($this->props, $props); }
+	
+	/**
+	 * Ajoute un ou plusieurs attribut HTML aux attributs déjà existants du sprite
+	 * @param (Array<String>) $props : Le ou les attributs à ajouter, dans un tableau
+	 */
+	function addProps($props) {
+	    $this->props = array_merge($this->props, $props);
+	}
 	
 	/**
 	 * Attache un évènement à l'élément HTML représentant le sprite.
@@ -62,15 +87,29 @@ class Sprite {
 	    $this->events[] = $e;
 	}
 	
+	/**
+	 * Défini la scène parent contenant ce sprite 
+	 * @param (Scene) $scene La scène contenant le sprite
+	 */
 	function setSceneParent($scene) {
 	    $this->sceneParent = $scene;
 	}
+	
+	/**
+	 * @return La scène parent contenant le script
+	 */
 	function getSceneParent() {
 	    return $this->sceneParent;
 	}
 	
+	/**
+	 * @return Les identifiants des sprites contenus dans ce sprite
+	 */
 	function getChildsIds() { return $this->childsId; }
 	
+	/**
+	 * @return Les sprites (les objets Sprite) contenus dans ce sprite
+	 */
 	function getChilds() {
 	    $childs = array();
 	    foreach($this->getChildsIds() as $childId) {

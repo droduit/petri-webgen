@@ -64,6 +64,10 @@ class Event {
 	function setDestTypePage($type) {
 	    $this->typePage = $type;
 	}
+	/**
+	 * Défini l'identifiant de la vue ou de la scene à afficher au déclenchement de l'évènement
+	 * @param (String) $id  : Identifiant dela vue ou de la scene
+	 */
 	function setDestId($id) {
 	    $this->idPage = $id;
 	}

@@ -24,8 +24,17 @@ class View {
 		$this->scenes = array();
 	}
 	
+	/**
+	 * @return Identifiant unique de la vue
+	 */
 	function getId() { return $this->id; }
+	/**
+	 * @return Titre de la vue, affiché dans la balise <title> de la page générée
+	 */
 	function getTitle() { return $this->title; }
+	/**
+	 * @return Un tableau des frames contenues dans la vue, du type Array<FrameId => Array<Scene, Position>> 
+	 */
 	function getFrames() { return $this->frames; }
 	
 	/**
@@ -69,6 +78,9 @@ class View {
     	return $content;
 	}
 	
+	/**
+	 * @return Le code HTML d'une frame particulière
+	 */
 	private function getFrameHTML($frameId, $scene, $position) {
 	    $positionCss = '';
 

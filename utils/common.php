@@ -1,4 +1,16 @@
 <?php
+/**
+ * Fourni une série de methodes communément utilisées.
+ * et d'une importance assez importante pour le fonctionnement du générateur.
+ * 
+ * @author Dominique Roduit
+ */
+// ----------------------------------------------------------------------------
+
+/**
+ * Liste les fichiers contenus dans le répertoire spécifié
+ * @return Une liste des nom des fichiers
+ */
 function getListDir($dir) {
 	$f = array();
 
@@ -11,6 +23,11 @@ function getListDir($dir) {
 	return $f;
 }
 
+/**
+ * Affiche des informations lisibles humainement à propos de l'objet passé
+ * à des fins de debuggage.
+ * Tout type d'objet peut être passé.
+ */
 function debug($o) {
 	if(is_bool($o)) 
 	    $o = $o ? "true" : "false";
@@ -19,14 +36,30 @@ function debug($o) {
 	echo'</pre><hr><br>';
 }
 
+/*
+ * @deprecated
+ * @return Le nom du sprite selon son Identifiant
+ */
 function getSpriteName($id) {
 	return 's'.$id;
 }
 
+/**
+ * @param $array Tableau key => value
+ * @param $attr Clé dont on veut vérifier l'existence
+ * @param $otherwise Valeur retournée si la valeur correspondante à la clé n'existe pas dans le tableau
+ * @return La valeur correspondant à la clé $attr si elle existe dans le tableau $array, ou $otherwise sinon  
+ */
 function exist($array, $attr, $otherwise) {
 	return isset($array[$attr]) ?  $array[$attr] : $otherwise;
 }
 
+/**
+ *  @return Header par défaut pour les Scènes.
+ * Le titre de la scene, la langue spécifiée par défaut, des meta pour mobile, 
+ * et les styles et javascript de la scene sont tous inclus ici.
+ * @param (Scene) $scene : La scene pour laquelle la page est créé
+ */
 function getHeaderScene($scene) {
     global $debug_mode;
 	$attrs = $scene->getArray();
@@ -46,6 +79,10 @@ function getHeaderScene($scene) {
 	<body>';
 }
 
+/**
+ * @param (String) $title : Le titre de la page générée pour la vue
+ * @return Le header par défaut pour les vues.
+ */
 function getHeaderView($title) {
     global $debug_mode;
     return '<!DOCTYPE HTML>
