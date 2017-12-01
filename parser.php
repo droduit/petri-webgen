@@ -27,6 +27,8 @@ foreach($petri['scenes'] as $s) {
                 $newSprite = clone $scene->getSprite($sprite['clone']);
                 $newSprite->setId(uniqid($sprite['id']));
                 $newSprite->addProps($props);
+                $newSprite->addAnimations($sprite['animations']);
+                
                 $scene->addSprite($newSprite);
             }
         } else {
@@ -34,6 +36,8 @@ foreach($petri['scenes'] as $s) {
             $childsId = (count($sprite['childs']) == 0) ? null : $sprite['childs'];
       
             $newSprite = new Sprite($sprite['nature'], $sprite['id'], $value, $props, $childsId);
+            $newSprite->addAnimations($sprite['animations']);
+            
             // Ajout du sprite à la scene
             $scene->addSprite($newSprite);
         }
@@ -106,5 +110,9 @@ foreach($petri['transitions'] as $trans) {
 
 // On définit la page index =====================================
 $index = $petri['index'];
+// ==============================================================
+
+// Récupération des dépendences personnalisées de l'utilisateur==
+$dependencies = $petri['include'];
 // ==============================================================
 ?>

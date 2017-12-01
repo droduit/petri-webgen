@@ -23,6 +23,8 @@ class Sprite {
 	private $allChildsIds;
 	/** Scene: Scene contenant ce sprite */
 	private $sceneParent;
+	/** Array<[type, duration, delay, effect]> : Animations sur le sprite */
+	private $animations;
 	
 	/**
 	 * Construit un nouveau Sprite.
@@ -44,6 +46,7 @@ class Sprite {
 		
 		// By default, empty event queue
 		$this->events = array();
+		$this->animations = array();
 	}
 	
 	/**
@@ -75,7 +78,17 @@ class Sprite {
 	 * @param (Array<String>) $props : Le ou les attributs à ajouter, dans un tableau
 	 */
 	function addProps($props) {
-	    $this->props = array_merge($this->props, $props);
+	    if($props != NULL)
+	       $this->props = array_merge($this->props, $props);
+	}
+	
+	/**
+	 * Ajoute des animations aux animations deja existantes du sprite
+	 * @param Array<[type, duration, delay, effect]> $animations : nouvelles animations
+	 */
+	function addAnimations($animations) {
+	    if($animations != NULL)
+	       $this->animations = array_merge($this->animations, $animations);
 	}
 	
 	/**
@@ -195,10 +208,19 @@ class Sprite {
     		$html .= '<'.$elmType.' '
     		            .$sprite->getHTMLAttributes().' ';
     		
+            // Si une animation in existe, on masque l'élément au chargement
+            $classHidden = "";
+            foreach($this->animations as $anim) {
+                if($anim['type'] == "in") {
+                    $classHidden = "hidden";
+                    break;
+                }
+            }
+    		            
     		if(!array_key_exists('class', $sprite->props["attr"])) {
-    		    $html.= ' class="'.$sprite->name.'"';
+    		    $html.= ' class="'.$sprite->name.' '.$classHidden.'"';
     		} else {
-    		    $html.= ' class="'.$sprite->name." ".$sprite->props["attr"]['class'].'"';
+    		    $html.= ' class="'.$sprite->name." ".$classHidden.' '.$sprite->props["attr"]['class'].'"';
     		}
     		
     
@@ -312,6 +334,70 @@ class Sprite {
 		
 		
 		return $jsEvents;
+	}
+	
+	/**
+	 * Génère un chaine contenant le code Javascript des animations attachés à cet élément HTML
+	 * @return La chaine contenant le code Javascript qui gère les animations de cet élément. 
+	 */
+	function getJSAnimations() {
+	    $jsAnim = "";
+	    $selector = '$(".'.$this->getName().'")';
+	    
+	    // On parcours toutes les animations.
+	    foreach($this->animations as $anim) {
+	        // Si le type de l'animation n'est pas donné, on ne la traite pas.
+	        if(isset($anim['type'])) {
+	            // Définition des valeurs par defaut si pas renseigné
+    	        if(!isset($anim['effect'])) 
+    	            $anim['effect'] = "fade";
+    	        if(!isset($anim['duration']))
+    	            $anim['duration'] = 500;
+    	        
+    	        // Ajout d'un delay si existe
+    	        if(isset($anim['delay'])) {
+    	            $jsAnim .= 'setTimeout(function(){ ';
+    	        }
+    	        
+    	        // Si on veut repeter l'animation
+    	        if(isset($anim['interval'])) {
+    	            $jsAnim .= 'setInterval(function(){ ';
+    	        }
+    	        
+    	        $nameAnim = 'show';
+    	        if($anim['type'] == "in") $nameAnim = "show";
+    	        else if($anim['type'] == "out") $nameAnim = "hide";
+    	        else if($anim['type'] == "toggle") $nameAnim = "toggle";
+    	       
+    	        
+    	        if($anim['duration'] == 0) {
+    	            $jsAnim .= $selector.".css('display', 'none');";
+    	        } else {
+    	            if($anim['type'] == "custom") {
+    	                $options = array();
+    	                foreach($anim as $k => $v) {
+    	                    if(in_array($k, array("duration","type","interval","delay","effect")))
+    	                        continue;
+    	                    array_push($options, $k.':"'.$v.'"');
+    	                }
+    	  
+    	                $jsAnim .= $selector.".animate({".implode(',', $options)."}, ".$anim['duration'].");";
+    	            } else {
+                        $jsAnim .= $selector.".".$nameAnim."('".$anim['effect']."', ".$anim['duration'].");";
+    	            }
+    	        }
+    	        
+    	        if(isset($anim['interval'])) {
+    	            $jsAnim .= "}, ".$anim['interval'].");";
+    	        }
+    	        
+                if(isset($anim['delay'])) {
+                    $jsAnim .= '}, '.$anim['delay'].");";
+                }
+	        }
+	    }
+	    
+	    return $jsAnim;
 	}
 	
 	

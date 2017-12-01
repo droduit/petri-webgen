@@ -3,6 +3,10 @@
 		"type":"view",
 		"id":"view2"
 	},
+	"include":{
+		"js":[],
+		"css":[]
+	},
 	"scenes":[
       {
          "id":"scene1",
@@ -25,12 +29,7 @@
 			"img": { "border-radius":"8px", "transition":"all 0.2s linear", "text-align":"center" },
 			"img:hover": { "opacity": 0.8 }
 		 },
-		 "container":1,
-		 "position": {
-		 	"bottom": 0,
-		 	"width": "100%",
-		 	"height": "50%"
-		 },
+		
          "sprites":[
             {
                "id": 1,
@@ -42,10 +41,7 @@
 			   },
 			   "style":{
 					"border":"3px solid black"
-				},
-				"eventProperties":{
-					"endDuration": { "timer":2 }
- 				}
+				}
             },
 			{
 				"id":2,
@@ -82,11 +78,7 @@
 		 "style": {
 			"background":"#ffffce"
 		  },
-		 "container":1,
-		 "position": {
-		 	"y":0,
-		 	"height":"50%"
-		 },
+		
          "sprites":[
             {
                "id":1,
@@ -117,12 +109,98 @@
       {
          "id":"scene3",
 		 "title":"Puissante page",
-		 "container":2,
+		 "css":{
+			".box": {
+				"font-size":"14px",
+				"color":"#020015",
+				"border":"1px solid #ddd",
+				"background":"linear-gradient(to bottom,  rgba(222,239,255,1) 0%,rgba(152,190,222,1) 100%)",
+				"border-radius":"8px",
+				"padding":"8px 12px",
+				"margin":"20px auto"
+			}
+		 },
          "sprites":[
             {
                "id":1,
-               "nature":"p",
-               "value":"Petite page toute seule"
+               "nature":"h2",
+               "value":"Démo des animations",
+               "style": {"text-align":"center"}
+            },
+            {
+            	"id":2,
+            	"nature":"div",
+            	"attr":{"class":"box"},
+            	"value":"Apparait après 1 sec. | effet : clip",
+            	"animations":[
+	            	{
+	            		"type":"in",
+	            		"delay": 1000,
+	            		"effect":"slide"
+	            	}
+				]
+            },
+            {
+            	"id":3,
+            	"nature":"div",
+            	"attr":{"class":"box"},
+            	"value":"Disparait après 1.5 sec. | effet : drop",
+            	"animations":[
+	            	{
+	            		"type":"out",
+		            	"delay": 2000,
+		            	"duration":800,
+	            		"effect":"drop"
+	            	}
+				]
+            },
+            {
+            	"id":4,
+            	"nature":"div",
+            	"attr":{"class":"box"},
+            	"value":"Clignotte après 4 sec. | effect : fade, interval : 0.8 sec.",
+            	"animations":[
+	            	{
+	            		"type":"toggle",
+	            		"duration":800,
+	            		"interval":800,
+	            		"delay": 4000,
+	            		"effect":"fade"
+	            	}
+				]
+            },
+            {
+            	"id":5,
+            	"nature":"div",
+            	"attr":{"class":"box"},
+            	"value":"Modification de l'opacité après 4 sec.",
+            	"animations":[
+	            	{
+	            		"type":"custom",
+	            		"opacity":"0.25",
+	            		"delay": 4000
+	            	}
+				]
+            },
+            {
+            	"id":6,
+            	"nature":"div",
+            	"attr":{"class":"box"},
+            	"value":"2 animations in et out avec effet différent appelées à interval régulier, déclenché après 5 sec.",
+            	"animations":[
+	            	{
+				            "type":"in",
+				            "interval":1500,
+				            "delay": 5000,
+				            "effect":"clip"
+				   },
+				   {
+				            "type":"out",
+				            "interval":2500,
+				            "delay": 5000,
+				            "effect":"drop"
+				   }
+				]
             }
          ]
       }

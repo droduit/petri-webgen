@@ -50,7 +50,7 @@ if(count($err) == 0) {
 	if($index != NULL) {
 	    $content = getContentIndex($index);
     	$filename = OUTPUT_DIR."/index.html";
-    	array_push($fileList, $filename);
+    	$index['filename'] = $filename;
     	createFile($filename, $content);
 	}
 }
@@ -67,21 +67,26 @@ if(count($err) > 0) {
 } else {
     ?>
 	<div class="success"><b>Congrats!</b> Your Petri network was successfully converted into a brand new website!</div>
-	<div class="result"><img src="img/arrow-r.svg" width="16px" align-auto><?= $nPages ?> views and <?= $nScenes ?> scenes were generated</div>
-	<script>$(function(){ setTimeout(function(){ $('.success, .result').slideUp(800); }, 4000); });</script>
+	<script>$(function(){ setTimeout(function(){ $('.success').slideUp(800); }, 4000); });</script>
+	
+	<?php
+	if($index != NULL) { ?>
+		<a class="startIndex" href="<?= $index['filename'] ?>">Démarrer mon site</a>
+	<?php 
+	}
+	?>
+	
 	<div class="titleCat"></div>
 	<div class="bt-back"><img src="img/arrow-r.svg" style="width:16px; transform:rotate(-180deg);" align-auto> Retour</div>
+	
 	<?php
 	echo '<ul class="files">';
 	$typesFile = array();
+	$indexExist = false;
 	foreach($fileList as $f) {
 	    $filename = str_replace(OUTPUT_DIR."/", '', $f);
 	    $typeF = explode("_", $filename)[0];
-	    if($typeF != "index.html") {
-	        $typeF .= "s";
-	    } else {
-	       $typeF = explode(".", $typeF)[0];    
-	    }
+        $typeF .= "s";
 	    
 	    if(!isset($typesFile[$typeF])) {
 	        $typesFile[$typeF] = 1;
@@ -89,11 +94,12 @@ if(count($err) > 0) {
 	       $typesFile[$typeF]++;
 	    }
 	    
-        echo '<a href="'.$f.'" typefile="'.$typeF.'" style="display:none"><li>'.$filename.'</li></a>';
+        echo '<a href="'.$f.'" typefile="'.$typeF.'" style="display:none"><li><img src="img/arrow-r.svg" width="16px" align-auto> '.$filename.'</li></a>';
 	}
 	
+	
 	foreach($typesFile as $tf => $number) {
-	   echo '<a href="#'.$tf.'" type="'.$tf.'"><li style="text-transform:capitalize">'.$tf." (".$number.")</li></a>";
+	   echo '<a href="#'.$tf.'" type="'.$tf.'"><li style="text-transform:capitalize"><img src="img/arrow-r.svg" width="16px" align-auto> '.$tf." (".$number.")</li></a>";
 	}	
 
 	echo '</ul>';

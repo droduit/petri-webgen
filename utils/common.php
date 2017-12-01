@@ -57,6 +57,34 @@ function exist($array, $attr, $otherwise) {
 	return isset($array[$attr]) ?  $array[$attr] : $otherwise;
 }
 
+function getDefaultDependencies() {
+    $path = DEPENDENCIES_DIR;
+    
+    global $dependencies;
+    $userDep = $dependencies;
+    
+    $js = array();
+    array_push($js, 'jquery-3.2.1.min.js');
+    array_push($js, 'jquery-ui.min.js');
+    $js = array_merge($js, $userDep['js']);
+    
+    $css = array();
+    array_push($css, 'reset.css');
+    array_push($css, 'jquery-ui.min.css');
+    array_push($css, 'jquery-ui.structure.min.css');
+    array_push($css, 'jquery-ui.theme.min.css');
+    $css = array_merge($css, $userDep['css']);
+    
+    $depHTML = "";
+    foreach($js as $src) {
+        $depHTML .= '<script src="'.$path.'/js/'.$src.'"></script>';
+    }
+    foreach($css as $src) {
+        $depHTML .= '<link rel="stylesheet" href="'.$path.'/css/'.$src.'" type="text/css">';
+    }
+    return $depHTML;
+}
+
 /**
  *  @return Header par défaut pour les Scènes.
  * Le titre de la scene, la langue spécifiée par défaut, des meta pour mobile, 
@@ -71,13 +99,12 @@ function getHeaderScene($scene) {
 	<head>
 		<title>'.exist($attrs, 'title', $attrs['id']).'</title>
 		<meta charset="UTF-8">
-		'.( exist($attrs, 'mobile', true) ? '<meta name="viewport" content="width=device-width,user-scalable=0">' : '').'
-		<script src="https://code.jquery.com/jquery-1.11.3.js"></script>'.
+		'.( exist($attrs, 'mobile', true) ? '<meta name="viewport" content="width=device-width,user-scalable=0">' : '')
+		.getDefaultDependencies().
 		'<script>var isInView = $("iframe[petri]", parent.document).size() > 0;</script>'.
 		($debug_mode ? '<script src="../js/debug.js"></script><link rel="stylesheet" href="../css/debug.css" type="text/css">' : '').
-		'<style>body { font-family: sans-serif; } a { text-decoration: none; color: black; } .clear { clear:both }</style>
-		'.$scene->getCSS()
-		 .$scene->getJS().'
+		$scene->getCSS()
+		.$scene->getJS().'
 	</head>
 	<body>';
 }
@@ -93,8 +120,8 @@ function getHeaderView($title) {
 	<head>
 		<title>'.$title.'</title>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,user-scalable=0">
-		<script src="https://code.jquery.com/jquery-1.11.3.js"></script>'.
+		<meta name="viewport" content="width=device-width,user-scalable=0">'
+		.getDefaultDependencies().
 		($debug_mode ? '<script src="../js/debug.js"></script><link rel="stylesheet" href="../css/debug.css" type="text/css">' : '').
 		'<style>body { margin:0; font-family: sans-serif; } a { text-decoration: none; color: black; } .clear { clear:both }</style>
 	</head>
@@ -115,8 +142,8 @@ function getContentIndex($index) {
 	<head>
 		<title>Chargement...</title>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width,user-scalable=0">
-		<script src="https://code.jquery.com/jquery-1.11.3.js"></script>'.
+		<meta name="viewport" content="width=device-width,user-scalable=0">'
+		.getDefaultDependencies().
 		($debug_mode ? '<script src="../js/debug.js"></script><link rel="stylesheet" href="../css/debug.css" type="text/css">' : '').
 		'<style>body { margin:0; font-family: sans-serif; } a { text-decoration: none; color: black; } .clear { clear:both }</style>
         <script>
@@ -133,18 +160,32 @@ function getContentIndex($index) {
     </html>';
 }
 
+/**
+ * @return Footer d'une page HTML générée
+ */
 function getFooter() {
     global $debug_mode;
 	return '</body></html>';
 }
 
+/**
+ * Créé un fichier sur le disque à l'emplacement $path, avec le contenu $content
+ * @param $path Emplacement du fichier
+ * @param $content Contenu du fichier
+ */
 function createFile($path, $content) {
 	$file = fopen($path, 'w');
 	fwrite($file, $content);
 	fclose($file);
 }
 
-
+/**
+ * Formatte une chaine pour être utilisée en CSS.
+ * Si l'argument passé ne se termine pas par px, dp ou %,
+ * alors la valeur par défaut sera exprimée en px
+ * @param (String out int) $arg : Argument css à formatter
+ * @return Argument exprimé en pixels si pas de mesure précisée
+ */
 function addPx($arg) {
     if(!preg_match('#^([0-9]{1,})(px|dp|%)$#i', $arg)) {
         return $arg."px";
@@ -152,10 +193,18 @@ function addPx($arg) {
     return $arg;
 }
 
+/**
+ * @param (String) $sceneId : Id de la scene dont on veut le nom de fichier
+ * @return nom de fichier pour la scène passée en paramètre
+ */
 function getSceneFilename($sceneId) {
     return "scene_".$sceneId.'.html';
 }
 
+/**
+ * @param (String) $viewId : Id de la vue dont on veut le nom de fichier
+ * @return nom de fichier pour la vue passée en paramètre
+ */
 function getViewFilename($viewId) {
     return "view_".$viewId.'.html';
 }
