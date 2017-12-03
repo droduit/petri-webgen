@@ -1,8 +1,20 @@
 $(function(){
 	
-	$('body').append('<div class="debug-bar"><div class="bt home">Home</div><div class="bt reload">Live reload</div></div>')
+	$('body').append('<div class="debug-bar"></div>')
 	.append('<div class="loader-modal"><img src="../img/loader.svg" class="loader"></div>');
 	
+	if(typeof isInView == "undefined" || !isInView) {
+		$('.debug-bar').append('<div class="bt home">Home</div>');
+	}
+	$('.debug-bar').append('<div class="bt reload">Live reload</div>');
+	$('.debug-bar').append('<div class="varIsInView">IsInView : <span></span></div>');
+	
+	var textVar = "undefined";
+	if(typeof isInView != "undefined") {
+		textVar = isInView ? "true": "false";
+	}  
+	$('.varIsInView span').text(textVar);
+
 	$('.home').click(function(){
 		window.location = "../";
 	});

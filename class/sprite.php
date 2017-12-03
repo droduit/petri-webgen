@@ -209,18 +209,17 @@ class Sprite {
     		            .$sprite->getHTMLAttributes().' ';
     		
             // Si une animation in existe, on masque l'élément au chargement
-            $classHidden = "";
-            foreach($this->animations as $anim) {
+            foreach($sprite->animations as $anim) {
                 if($anim['type'] == "in") {
-                    $classHidden = "hidden";
+                    $html .= 'style="display:none" ';
                     break;
                 }
             }
     		            
     		if(!array_key_exists('class', $sprite->props["attr"])) {
-    		    $html.= ' class="'.$sprite->name.' '.$classHidden.'"';
+    		    $html.= ' class="'.$sprite->name.'"';
     		} else {
-    		    $html.= ' class="'.$sprite->name." ".$classHidden.' '.$sprite->props["attr"]['class'].'"';
+    		    $html.= ' class="'.$sprite->name.' '.$sprite->props["attr"]['class'].'"';
     		}
     		
     
@@ -262,7 +261,8 @@ class Sprite {
 		if(!isset($this->props['attr'])) return "";
 		
 		if(count($this->props['attr']) > 0) {
-			foreach($this->props['attr'] as $name => $val) {
+		    
+		    foreach($this->props['attr'] as $name => $val) {
 				if($name != "class")
 			         $htmlAttrs .= $name."=\"".$val."\" ";
 			}
@@ -271,6 +271,8 @@ class Sprite {
 		if($this->type == "video" && !isset($this->props['attr']['controls'])) {
 			$htmlAttrs .= " controls ";
 		}
+		
+		
 		
 		return $htmlAttrs;
 	}
@@ -284,37 +286,49 @@ class Sprite {
 		
 		// La variable javascript isInView indique si la scene contenant ce sprite
 		// se trouve dans une vue ou pas.
+		//debug($this->events);
 		
 		foreach($this->events as $e) {
-		    $selector = ".".$this->getName();
-		    $destSrc = $e->getDestFilename();
-		    $actionName = $e->getEventType();
-		    $targetCode = "document.location.href";
 		    $code = "";
 		    
+		    $dests = $e->getDests();
+		    
+		    $selector = ".".$this->getName();
+		    $actionName = $e->getEventType();
+		    $targetCode = "document.location.href";
+		    $sceneFilename = getSceneFilename($this->getSceneParent()->getId());
+		    
 		    // Si on charge dans une nouvelle page
-		    if(count($e->getTargets()) == 0) {
+		    if($e->isExternal()) {
+		        $destSrc = $dests[0]->getFilename();
+		        
 		        $code = 'if(isInView) {'. // la scene est dans une vue et on veut atteindre une nouvelle page
+		  		            //'alert("1");'.
                             'parent.'.$targetCode."='".$destSrc."';".  
-                        '} else {'.
+                        '} else { '. //'alert("2");'.
                             $targetCode."='".$destSrc."';".
 		                '}';
 		    }
 		    // Si on charge dans une ou plusieurs iframe(s) de la meme page
 		    else {
-		        $code .= "if(isInView) { ";
-    		    foreach($e->getTargets() as $target) {
-    		        $code .=
-    		        // Si on charge dans la frame dans laquelle on est
-        		    'if($("iframe[petri][src*=\''.$this->getSceneParent()->getId().'\']", parent.document).attr("id") == "'.$target.'") {'.
-		                  $targetCode."='".$destSrc."';".
-		            // Si on charge dans une autre frame
-		            '} else {'.
-		                  "$('iframe[petri][id=".$target."]', parent.document)".
-		                  ".attr('src', '".$destSrc."'); ".
-		            '}';
+		        $code .= "if(isInView) {";
+    		    foreach($dests as $dest) {
+    		        $destSrc = $dest->getFilename();
+    		        
+    		        foreach($dest->getTargets() as $target) {
+        		        $code .=
+        		        // Si on charge dans la frame dans laquelle on est
+            		    'if($("iframe[petri][src*=\''.$sceneFilename.'\']", parent.document).attr("id") == "'.$target.'") {'.
+            		          //'alert("3");'.
+    		                  $targetCode."='".$destSrc."';".
+    		            // Si on charge dans une autre frame
+        		        '} else { '. //'alert("4 '.$destSrc.' '.$target.'");'.
+    		                  "$('iframe[petri][id=".$target."]', parent.document)".
+    		                  ".attr('src', '".$destSrc."'); ".
+    		            '}';
+    		        }
     		    }
-    		    $code .= "} else {";
+    		    $code .= "} else { "; // alert('5');
     		    $code .=      $targetCode."='".$destSrc."';";
     		    $code .= "}";
             }
@@ -330,6 +344,7 @@ class Sprite {
             $jsEvents .= "$('".$selector."').on('".$actionName."', function(){";
             $jsEvents .=     $code;
             $jsEvents .= "}); ";
+            
 		}
 		
 		

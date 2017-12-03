@@ -101,7 +101,7 @@ function getHeaderScene($scene) {
 		<meta charset="UTF-8">
 		'.( exist($attrs, 'mobile', true) ? '<meta name="viewport" content="width=device-width,user-scalable=0">' : '')
 		.getDefaultDependencies().
-		'<script>var isInView = $("iframe[petri]", parent.document).size() > 0;</script>'.
+		'<script>var isInView = $("iframe[petri]", parent.document).length > 0;</script>'.
 		($debug_mode ? '<script src="../js/debug.js"></script><link rel="stylesheet" href="../css/debug.css" type="text/css">' : '').
 		$scene->getCSS()
 		.$scene->getJS().'

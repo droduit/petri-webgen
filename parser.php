@@ -69,13 +69,18 @@ foreach($petri['views'] as $view) {
 
 // Transitions ==================================================
 foreach($petri['transitions'] as $trans) {
+    
     $assocOut = array();
     foreach($trans['associationOut']['regles'] as $aO) {
-        $assocOut[$aO['id']] = $aO['dest'];
+        $dests = array();
+        foreach($aO['dest'] as $dest) {
+            array_push($dests, new Dest($dest['type'], $dest['id'], $dest['targets']));
+        }
+        $assocOut[$aO['id']] = $dests;
     }
     
     foreach($trans['associationIn']['regles'] as $aI) {
-        $dest = $assocOut[$aI['id']];
+        $dests = $assocOut[$aI['id']];
         
         
         foreach($aI['scenes'] as $sceneFrom) {
@@ -85,17 +90,13 @@ foreach($petri['transitions'] as $trans) {
             foreach($aI['sprites'] as $sprite) {
                 $split = explode('.', $sprite);
                 if(count($split) != 2) {
-                    $err[] = "La regle id=".$aI['id']." de la transition id=".$trans['id']." est malformée";
+                    $err[] = "La regle id=".$aI['id']." de la transition id=".$trans['id']." est malformée. les sprites doivent avoir la forme spriteId.eventName";
                 }
                
                 $eventType = $split[1];
                 $elemTrigger = $split[0];
                 
-                $event = new Event($eventType, $elemTrigger);
-                $sceneDst = $dest['scene'];
-                $event->setDestTypePage($sceneDst['type']);
-                $event->setDestId($sceneDst['id']);
-                $event->setTargets($dest['targets']);
+                $event = new Event($eventType, $elemTrigger, $dests);
                 
                 // Ajout de l'evenement à la transition
                 $transition->addEvent($event);

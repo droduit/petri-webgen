@@ -1,4 +1,4 @@
 body { font-family: sans-serif; }
 a { text-decoration: none; color: black; }
 .clear { clear:both }
-.hidden { display: none; }
+div.hidden, p.hidden, img.hidden, h1.hidden, h2.hidden, h3.hidden, h4.hidden, video.hidden, iframe.hidden, span.hidden, form.hidden, input.hidden, li.hidden, ul.hidden, ol.hidden, a.hidden, .hidden { display: none; }

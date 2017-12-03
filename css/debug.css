@@ -43,3 +43,8 @@ body {
 	left: 50%;
 	margin-left: -100px;
 }
+.varIsInView {
+	float : right;
+	margin-right: 8px;
+	padding-top: 9px;
+}
