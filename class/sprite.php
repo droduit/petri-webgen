@@ -91,6 +91,8 @@ class Sprite {
 	       $this->animations = array_merge($this->animations, $animations);
 	}
 	
+	function getAnimations() { return $this->animations; }
+	
 	/**
 	 * Attache un évènement à l'élément HTML représentant le sprite.
 	 * Les évènements sont générés en JS.
@@ -272,8 +274,6 @@ class Sprite {
 			$htmlAttrs .= " controls ";
 		}
 		
-		
-		
 		return $htmlAttrs;
 	}
 	
@@ -286,7 +286,7 @@ class Sprite {
 		
 		// La variable javascript isInView indique si la scene contenant ce sprite
 		// se trouve dans une vue ou pas.
-		//debug($this->events);
+		// debug($this->events);
 		
 		foreach($this->events as $e) {
 		    $code = "";
@@ -311,26 +311,64 @@ class Sprite {
 		    }
 		    // Si on charge dans une ou plusieurs iframe(s) de la meme page
 		    else {
-		        $code .= "if(isInView) {";
+		        // On ne traite que les destinations non js ici
+		        if(!(count($dests) == 1 && $dests[0]->getType() == "js")) {
+    		        $code .= "if(isInView) {";
+        		    foreach($dests as $dest) {
+        		        
+        		        if($dest->getType() != "js") {
+            		        $destSrc = $dest->getFilename();
+            		        
+            		        foreach($dest->getTargets() as $target) {
+                		        $code .=
+                		        // Si on charge dans la frame dans laquelle on est
+                    		    'if($("iframe[petri][src*=\''.$sceneFilename.'\']", parent.document).attr("id") == "'.$target.'") {'.
+                    		          //'alert("3");'.
+            		                  $targetCode."='".$destSrc."';".
+            		            // Si on charge dans une autre frame
+                		        '} else { '. //'alert("4 '.$destSrc.' '.$target.'");'.
+            		                  "$('iframe[petri][id=".$target."]', parent.document)".
+            		                  ".attr('src', '".$destSrc."'); ".
+            		            '}';
+            		        }
+        		        }
+        		    }
+        		    $code .= "} else { "; // alert('5');
+        		    $code .=      $targetCode."='".$destSrc."';";
+        		    $code .= "}";
+		        }
+		        
+    		    // On ne traite que les actions js ici
     		    foreach($dests as $dest) {
-    		        $destSrc = $dest->getFilename();
-    		        
-    		        foreach($dest->getTargets() as $target) {
-        		        $code .=
-        		        // Si on charge dans la frame dans laquelle on est
-            		    'if($("iframe[petri][src*=\''.$sceneFilename.'\']", parent.document).attr("id") == "'.$target.'") {'.
-            		          //'alert("3");'.
-    		                  $targetCode."='".$destSrc."';".
-    		            // Si on charge dans une autre frame
-        		        '} else { '. //'alert("4 '.$destSrc.' '.$target.'");'.
-    		                  "$('iframe[petri][id=".$target."]', parent.document)".
-    		                  ".attr('src', '".$destSrc."'); ".
-    		            '}';
+    		        if($dest->getType() != "js") {
+    		            continue;
     		        }
+    		        
+    		        $jsArray = $dest->getJS();
+    		        $targetSprite = $this->getSceneParent()->getSprite($jsArray['target']);
+    		        
+    		        if($jsArray['action'] == "load") {
+    		            foreach($jsArray['source'] as $type => $source) {
+    		              if($type == "scene") {
+    		                  // on charge une scene en ajax dans $jsArray['target']
+    		                  $code .= '$.post("'.getSceneFilename($source).'", {}, function(fullHtml){'.
+        		                          'var bodyHtml = /<body.*?>([\s\S]*)<\/body>/.exec(fullHtml)[1];'.
+        		                          '$(".'.$targetSprite->getName().'").html(bodyHtml);'.
+        		                       '});';
+    		              } else if($type == "sprite") {
+    		                  // on charge un sprite dans $jsArray['target']
+    		                  $code .= '$.post("'.getSceneFilename($source).'", {}, function(fullHtml){'.
+                		                  'var spriteHtml = /<body.*?>([\s\S]*)<\/body>/.exec(fullHtml)[1];'.
+                		                  '$(".'.$targetSprite->getName().'").html(spriteHtml);'.
+                		                '});';
+    		              }
+    		            }
+    		            
+    		        } else if($jsArray['action'] == "animation") {
+    		            $code .= $this->getJSAnimations($targetSprite, $jsArray['animations']);
+    		        }
+    		        
     		    }
-    		    $code .= "} else { "; // alert('5');
-    		    $code .=      $targetCode."='".$destSrc."';";
-    		    $code .= "}";
             }
             
             // $('video').on('ended', function(){ ... });
@@ -355,12 +393,12 @@ class Sprite {
 	 * Génère un chaine contenant le code Javascript des animations attachés à cet élément HTML
 	 * @return La chaine contenant le code Javascript qui gère les animations de cet élément. 
 	 */
-	function getJSAnimations() {
+	function getJSAnimations($targetSprite, $animations) {
 	    $jsAnim = "";
-	    $selector = '$(".'.$this->getName().'")';
+	    $selector = '$(".'.$targetSprite->getName().'")';
 	    
 	    // On parcours toutes les animations.
-	    foreach($this->animations as $anim) {
+	    foreach($animations as $anim) {
 	        // Si le type de l'animation n'est pas donné, on ne la traite pas.
 	        if(isset($anim['type'])) {
 	            // Définition des valeurs par defaut si pas renseigné

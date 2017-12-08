@@ -41,7 +41,8 @@ class Event {
 	 */
 	function isExternal() {
 	    if(count($this->dests) == 1) {    
-	        if(is_null($this->dests[0]->getTargets()) || count($this->dests[0]->getTargets()) == 0) {
+	        $noTarget = is_null($this->dests[0]->getTargets()) || count($this->dests[0]->getTargets()) == 0;
+	        if($this->dests[0]->getType() != "js" && $noTarget) {
 	            return true;
 	        }
 	    }
@@ -51,18 +52,20 @@ class Event {
 
 
 class Dest {
-    /** String: Type de page (scene ou vue) appelée par l'évenement */
+    /** String: Type de destination (scene, vue, ou js) appelée par l'évenement */
     private $type;
     /** String: Id de la scene ou de la vue de destination appelée par l'evenement */
     private $id;
     /** Array<String>: Id des frames dans lesquelles charger la scene de destination */
     private $targets;
+
+    private $js;
     
-    
-    function __construct($type, $id, $targets) {
+    function __construct($type, $id, $targets, $js) {
         $this->type = $type;
         $this->id = $id;
         $this->targets = $targets;
+        $this->js = $js;
     }
     
     /**
@@ -77,6 +80,8 @@ class Dest {
      * @return (Array<String>) Iframes cibles dans lesquels charger la prochaine scène
      */
     function getTargets() { return $this->targets; }
+    
+    function getJS() { return $this->js; }
     
     /**
      * Défini la scene suivante à charger lorsque l'evenement est déclenché.
@@ -111,6 +116,6 @@ class Dest {
             else
                 return getSceneFilename($this->getId());
     }
-    
+   
 }
 ?>

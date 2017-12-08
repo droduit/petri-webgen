@@ -141,7 +141,7 @@ class Scene {
 		// JS des sprites de la scene
 		foreach($this->sprites as $sprite) {
 			$scripts .= $sprite->getJSEvents();
-			$scripts .= $sprite->getJSAnimations();
+			$scripts .= $sprite->getJSAnimations($sprite, $sprite->getAnimations());
 		}
 		
 		if(empty($scripts)) return "";

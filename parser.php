@@ -73,8 +73,8 @@ foreach($petri['transitions'] as $trans) {
     $assocOut = array();
     foreach($trans['associationOut']['regles'] as $aO) {
         $dests = array();
-        foreach($aO['dest'] as $dest) {
-            array_push($dests, new Dest($dest['type'], $dest['id'], $dest['targets']));
+        foreach($aO['dest'] as $dest) { 
+            array_push($dests, new Dest($dest['type'], $dest['id'], $dest['targets'], $dest['js']));
         }
         $assocOut[$aO['id']] = $dests;
     }
