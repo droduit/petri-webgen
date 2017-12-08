@@ -209,4 +209,60 @@ function getViewFilename($viewId) {
     return "view_".$viewId.'.html';
 }
 
+/**
+ * @param (String) $filename : Nom du fichier json dont on veut le hash
+ * @return empreinte du fichier json spécifié
+ */
+function getStampOf($filename, $hashedPwd=NULL) {
+	return hash_hmac_file('sha512', $filename,
+	    is_null($hashedPwd) ? getUserPwdHash() : $hashedPwd);
+}
+
+/**
+ * Vérifie que le fichier stamp contienne les informations requises
+ */
+function checkStampSanity() {
+    $tab = explode('|', file_get_contents(STAMP_FILE));
+    $cond1 = count($tab) == 2;
+    $cond2 = strlen(trim($tab[0])) == 128 && strlen(trim($tab[1])) == 128;
+    return $cond1 && $cond2;
+}
+
+/**
+ * @return (String) le mot de passe hashé entré par l'utilisateur
+ */
+function getUserPwdHash() {
+    $content = file_get_contents(STAMP_FILE);
+    return trim(explode("|", $content)[1]);
+}
+
+/**
+ * @return (String) l'emprunte enregistrée du fichier json de base
+ */
+function getSavedStamp() {
+    $content = file_get_contents(STAMP_FILE);
+    return trim(explode('|', $content)[0]);
+}
+
+/**
+ * Hash les mots de passes avec une fonction de hashage définie
+ */
+function hashPwd($pwd) {
+    return hash('sha512', $pwd);  
+}
+
+/**
+ * Génère un nouveau fichier stamp (uniquement a but de debug)
+ * @param $filename Nom du fichier JSON
+ * @param $pwd Mot de passe non crypté de l'utilisateur
+ */
+function genStamp($filename, $pwd) {
+    $hashedPwd = hashPwd($pwd);
+    createFile(STAMP_FILE, getStampOf($filename, $hashedPwd)."|".$hashedPwd);
+}
+
+function isJSON($filename) {
+    $fileparts = pathinfo($filename);
+    return $fileparts['extension'] == "json";
+}
 ?>

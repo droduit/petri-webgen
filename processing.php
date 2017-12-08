@@ -6,7 +6,8 @@ if(isset($_POST['debug']) && $_POST['debug'] == 1) {
 }
 
 // Chargement du fichier
-$json = file_get_contents('petri.json');
+$json_filename = 'petri.json';
+$json = file_get_contents($json_filename);
 $petri = json_decode($json, true);
 
 // Parse du fichier, traduction du JSON en HTML via la création
@@ -65,7 +66,10 @@ if(count($err) > 0) {
     }
     echo '</ul>';
 } else {
-    ?>
+    if(checkStampSanity() && getSavedStamp() != getStampOf($json_filename)) { ?>
+    	<div class="error">Attention ! Le fichier a été modifié par rapport à l'original</div>
+    <?php } ?>
+    
 	<div class="success"><b>Congrats!</b> Your Petri network was successfully converted into a brand new website!</div>
 	<script>$(function(){ setTimeout(function(){ $('.success').slideUp(800); }, 4000); });</script>
 	

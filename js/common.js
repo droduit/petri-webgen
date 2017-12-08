@@ -16,6 +16,28 @@ $(function(){
 				$('.content').html('<div class="error">'+err+'</div>').fadeIn();
 			});
 		});
+	} else {
+		$('.gen-stamp').on('click', function(){
+			toggleModal();
+			var jsonfilename = $(this).attr("json_filename");
+			
+			$('.bt-ok').unbind("click").bind('click', function(){
+				var val = $('input#pwd').val();
+				if(val.length > 0) {
+					$.post('index.php', {
+						genStamp:1,
+						json_filename: jsonfilename,
+						pwd: val
+					}, function(html){
+						$('input#pwd').val("");
+						$('.result').html(html);
+						if(html != '-1') {
+							setTimeout(function(){ toggleModal(); }, 1000);
+						}
+					});
+				}
+			});
+		});
 	}
 	
 	$('body').on('click', 'a[type]', function(){
@@ -44,5 +66,27 @@ function correctImg() {
 		$(this).css("position","absolute")
 		.after('<div style="margin-right: 2px; width:'+$(this).css("width")+'; display:inline-block;"></div>')
 		.removeAttr("align-auto");
+	});
+}
+
+function toggleModal() {
+	$('.result').html("");
+	$('.modal-layer').fadeToggle(500);
+	$('.modal-win').toggle('clip');
+	$('.modal-win input[type=password]').val("").unbind('keyup').focus().bind('keyup', function(key){
+		switch(key.which) {
+		case 13: // enter
+			$('.bt-ok').trigger("click");
+			break;
+		case 27: // esc
+			toggleModal();
+			break;
+			
+			default:
+		}
+	});
+	
+	$('.modal-layer').unbind("click").bind('click', function(){
+		toggleModal();
 	});
 }
