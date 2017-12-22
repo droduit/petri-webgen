@@ -14,4 +14,6 @@ if(!file_exists(OUTPUT_DIR)) {
 if(!file_exists(SCENE_DIR)) {
     mkdir(SCENE_DIR, 0777, true);
 }
+
+session_start();
 ?>

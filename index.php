@@ -1,16 +1,22 @@
 <?php 
 include_once('header.inc.php');
-$debug_mode = true;
+$debug_mode = false;
+$mdpRequired = true;
 
-if(count($_POST) == 0) {
-?>
+if(isset($_POST['newUpload']) || $debug_mode) {
+    unset($_SESSION['file']);
+    unset($_SESSION['pwd']);
+    unset($_SESSION['stamp']);
+}
+
+if(count($_POST) == 0) {?>
 <!DOCTYPE HTML>
 <html>
 	<head>
 		<title>Petri modelisation to website converter</title>
 		<meta charset="UTF-8">
 		<script src="js/jquery-3.2.1.min.js"></script>
-		<script src="js/common.js" debug_mode="<?= $debug_mode ? 1 : 0 ?>"></script>
+		<script src="js/common.js" mdpRequired="<?= $mdpRequired ? 1 : 0 ?>" debug_mode="<?= $debug_mode ? 1 : 0 ?>"></script>
 		<link rel="stylesheet" href="css/style.css" type="text/css">
 	</head>
 	
@@ -20,33 +26,39 @@ if(count($_POST) == 0) {
 			<div class="title">Petri <img src="img/arrow-r.svg" width="16px" align-auto> Website</div>
 			
 			<div class="content">
-				<?php
-				if(!file_exists(STAMP_FILE)) {
-				    echo '<div class="error">Le fichier <b>'.STAMP_FILE.'</b> n\'existe pas</b></div>';
-				} 
-  
-			    if(!checkStampSanity()) { ?>	
-					<div class="error">Le fichier <b><?= STAMP_FILE ?></b> est malformé ou a été modifié</div>
-				<?php } ?>
 				
-				<?php if(!$debug_mode) {?>
-				<img src="img/loader.svg" class="loader">
-				<div style="text-align:center; margin-bottom: 15px; color: #999">Processing...</div>
-    			<?php } else {
-    				include_once('processing.php');
-    			} ?>
+				<div id="loading" style="display:none">
+    				<img src="img/loader.svg" class="loader">
+    				<div style="text-align:center; margin-bottom: 15px; color: #999">Processing...</div>
+        		</div>
+        		
+        		<?php
+        		if(!isset($_SESSION['pwd']) && !$debug_mode) {
+				    include_once('upload.php');
+				} else {
+    				if($debug_mode) {
+        				include_once('processing.php');
+        			} else { ?>
+        			<script>$(function(){ loadProcessing(); });</script>
+        			<?php }?>
+        			
+        		<?php 	
+			    }?>
+
     		</div>
 		</div>
-
+		
+		<div class="copyright">Dominique Roduit - EPFL &copy; <?= date('Y') ?></div>
+		
+		
 		<?php if($debug_mode) { ?>
+		<div class="debug-area">
 			<div class="debug-message">Debug mode</div>
 			<div class="debug-tools">
 				<div class="item gen-stamp" json_filename="<?= $json_filename ?>">Generate new stamp</div>
 			</div>
+		</div>
 		<?php } ?>
-		
-		<div class="copyright">Dominique Roduit - EPFL &copy; <?= date('Y') ?></div>
-		
 		
 		<div class="modal-layer"></div>
 		

@@ -1,22 +1,12 @@
 $(function(){
 	var debug_mode = $('script[debug_mode]').attr("debug_mode") == 1;
+	var mdpRequired = $('script[debug_mode]').attr("mdpRequired") == 1;
 
 	correctImg();
 	
 	$('.success, .error').css("display","none").fadeIn();
 
-	if(!debug_mode) {
-		$.post('processing.php', {}, function(html){
-			$('.content').fadeOut("fast", function(){
-				$('.content').html(html).fadeIn();
-				correctImg();
-			});
-		}).fail(function(jqXHR, err){
-			$('.content').fadeOut("fast", function(){
-				$('.content').html('<div class="error">'+err+'</div>').fadeIn();
-			});
-		});
-	} else {
+	if(debug_mode) {
 		$('.gen-stamp').on('click', function(){
 			toggleModal();
 			var jsonfilename = $(this).attr("json_filename");
@@ -60,6 +50,26 @@ $(function(){
 	});
 	
 });
+
+function loadProcessing() {
+	var debug_mode = $('script[debug_mode]').attr("debug_mode") == 1;
+	var mdpRequired = $('script[debug_mode]').attr("mdpRequired") == 1;
+	
+	$('#loading').css("display","block");
+	$.post('processing.php', {
+		debug:debug_mode,
+		mdpNeeded: mdpRequired
+	}, function(html){
+		$('.content').fadeOut("fast", function(){
+			$('.content').html(html).fadeIn();
+			correctImg();
+		});
+	}).fail(function(jqXHR, err){
+		$('.content').fadeOut("fast", function(){
+			$('.content').html('<div class="error">'+err+'</div>').fadeIn();
+		});
+	});
+}
 
 function correctImg() {
 	$('img[align-auto]').each(function(){
