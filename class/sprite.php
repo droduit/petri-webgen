@@ -42,7 +42,7 @@ class Sprite {
 		$this->name = getSpriteName($id);
 		$this->props = $props;
 		$this->value = $value;
-		$this->childsId = $childsId;
+		$this->childsId = is_null($childsId) ? array() : $childsId;
 		
 		// By default, empty event queue
 		$this->events = array();
@@ -87,7 +87,7 @@ class Sprite {
 	 * @param Array<[type, duration, delay, effect]> $animations : nouvelles animations
 	 */
 	function addAnimations($animations) {
-	    if($animations != NULL)
+	    if(!is_null($animations))
 	       $this->animations = array_merge($this->animations, $animations);
 	}
 	
@@ -217,13 +217,16 @@ class Sprite {
                     break;
                 }
             }
-    		            
-    		if(!array_key_exists('class', $sprite->props["attr"])) {
-    		    $html.= ' class="'.$sprite->name.'"';
-    		} else {
-    		    $html.= ' class="'.$sprite->name.' '.$sprite->props["attr"]['class'].'"';
-    		}
     		
+			if(isset($sprite->props['attr'])) {
+				if(!isset($sprite->props["attr"]['class'])) {
+					$html.= ' class="'.$sprite->name.'"';
+				} else {
+					$html.= ' class="'.$sprite->name.' '.$sprite->props["attr"]['class'].'"';
+				}
+			} else {
+				$html.= ' class="'.$sprite->name.'"';
+			}
     
 			if($closingBalise) {
 			    $html .= '>'.$sprite->value;

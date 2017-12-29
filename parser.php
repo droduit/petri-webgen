@@ -10,41 +10,47 @@ foreach($petri['scenes'] as $s) {
     $scene = new Scene($s);
     
     // Sprites --------------------------------
-    foreach($s['sprites'] as $sprite) {
-        
-        // Fetch de tous les tableaux
-        $props = array();
-        foreach($SPRITE_ATTR_TO_FETCH as $attrName) {
-            if(isset($sprite[$attrName])) {
-                $props[$attrName] = $sprite[$attrName];
-            }
-        }
-        
-        if(isset($sprite['clone'])) {
-            $count = (isset($sprite['count'])) ? $sprite['count'] : 1;
-            
-            for($i = 0; $i < $count; ++$i) {
-                $newSprite = clone $scene->getSprite($sprite['clone']);
-                $newSprite->setId(uniqid($sprite['id']));
-                $newSprite->addProps($props);
-                $newSprite->addAnimations($sprite['animations']);
-                
-                $scene->addSprite($newSprite);
-            }
-        } else {
-            $value = isset($sprite['value']) ? $sprite['value'] : NULL;
-            $childsId = (count($sprite['childs']) == 0) ? null : $sprite['childs'];
-      
-            $newSprite = new Sprite($sprite['nature'], $sprite['id'], $value, $props, $childsId);
-            $newSprite->addAnimations($sprite['animations']);
-            
-            // Ajout du sprite à la scene
-            $scene->addSprite($newSprite);
-        }
-        
-    }
-    
-    $scene->processSpritesChilds();
+	if(isset($s['sprites'])) {
+		foreach($s['sprites'] as $sprite) {
+			
+			// Fetch de tous les tableaux
+			$props = array();
+			foreach($SPRITE_ATTR_TO_FETCH as $attrName) {
+				if(isset($sprite[$attrName])) {
+					$props[$attrName] = $sprite[$attrName];
+				}
+			}
+			
+			if(isset($sprite['clone'])) {
+				$count = (isset($sprite['count'])) ? $sprite['count'] : 1;
+				
+				for($i = 0; $i < $count; ++$i) {
+					$newSprite = clone $scene->getSprite($sprite['clone']);
+					$newSprite->setId(uniqid($sprite['id']));
+					$newSprite->addProps($props);
+					
+					if(isset($sprite['animations']))
+						$newSprite->addAnimations($sprite['animations']);
+					
+					$scene->addSprite($newSprite);
+				}
+			} else {
+				$value = isset($sprite['value']) ? $sprite['value'] : NULL;
+				$childsId = (!isset($sprite['childs']) || count($sprite['childs']) == 0) ? null : $sprite['childs'];
+		  
+				$newSprite = new Sprite($sprite['nature'], $sprite['id'], $value, $props, $childsId);
+				
+				if(isset($sprite['animations']))
+					$newSprite->addAnimations($sprite['animations']);
+				
+				// Ajout du sprite à la scene
+				$scene->addSprite($newSprite);
+			}
+			
+		}
+		
+		$scene->processSpritesChilds();
+	}
     // ----------------------------------------
     
     // Ajout de la scene
@@ -74,6 +80,10 @@ foreach($petri['transitions'] as $trans) {
     foreach($trans['associationOut']['regles'] as $aO) {
         $dests = array();
         foreach($aO['dest'] as $dest) { 
+			if(!isset($dest['targets']))	$dest['targets'] = null;
+			if(!isset($dest['js']))			$dest['js'] = null;
+			if(!isset($dest['id']))			$dest['id'] = null;
+			
             array_push($dests, new Dest($dest['type'], $dest['id'], $dest['targets'], $dest['js']));
         }
         $assocOut[$aO['id']] = $dests;

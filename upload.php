@@ -1,19 +1,19 @@
 <?php 
-session_start();
-
 if(count($_FILES) == 0 && count($_POST) == 0) {
 ?>
 <div class="form-wrapper">
 	<div class="form-div">
         <form method="POST" enctype="multipart/form-data" id="form1">
         	<div style="margin-bottom:8px; color:#555" class="info">1. Sélectionnez votre réseau de Pétri au format JSON</div>
-            <input type="file" style="width:108px" />
+            <div class="button">Choisissez un fichier</div>
+			<input type="file" style="width:0px; opacity:0" />
         </form>
         
         <form method="post" id="form2" style="display:none">
         	<div class="success">Réseau de Pétri importé avec succès !</div>
         	<div style="margin-bottom:8px; color:#555" class="info">2. Sélectionnez l'emprunte numérique STAMP</div>
-            <input type="file" style="width:108px" />
+            <div class="button">Choisissez un fichier</div>
+			<input type="file" style="width:0px; opacity:0" />
         </form>
     </div>
     
@@ -35,7 +35,9 @@ $(document).ready(function () {
 		e.preventDefault();
 	});
 
-	
+	$('.button').click(function(){
+		$(this).parent('form').find('input[type=file]').click();
+	});
     
 	$('#form1 input[type="file"]').change(function(event){
         event.preventDefault();
@@ -46,7 +48,7 @@ $(document).ready(function () {
 
 		console.log("file", file);
 
-        if(!file.type.match('json')) {              
+        if(!file.name.match('json')) {              
             $("#form1 .info").html("Veuillez sélectionner un fichier JSON");
         }else if(file.size > 1.5e7){
             $("#form1 .info").html("Taille maximale de fichier : 10 MB");
@@ -101,7 +103,6 @@ $(document).ready(function () {
             xhr.open('POST', 'uploadStamp.php', true);  
             xhr.send(data);
             xhr.onload = function () {
-                //get response and show the uploading status
                 var response = JSON.parse(xhr.responseText);
                 if(xhr.status === 200 && response.status == 'ok'){
 
@@ -185,7 +186,6 @@ form {
         $json_filename = $_SESSION['file'];
         $json = file_get_contents($json_filename);  
         $petri = json_decode($json, true);
-        $stamp = $petri['stamp'];
         
         if(hashPwd($_POST['pwd']) == getUserPwdHash()) {
             $res['status'] = "ok";

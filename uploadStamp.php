@@ -1,6 +1,4 @@
 <?php 
-session_start();
-
 include_once('header.inc.php');
 
 //generate unique file name
@@ -14,9 +12,15 @@ $targetFilePath = $targetDir . $fileName;
 $fileType = pathinfo($targetFilePath,PATHINFO_EXTENSION);
 
 if(move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)){
-    $response['status'] = 'ok';
-    $_SESSION['stamp'] = $targetFilePath;
-    $response['file'] = $_SESSION['stamp'];
+	
+	$_SESSION['stamp'] = $targetFilePath;
+	$response['file'] = $_SESSION['stamp'];
+	
+	if(checkStampSanity()) {
+		$response['status'] = 'ok';
+	} else {
+		$response['status'] = "err";
+	}
 } else{
     $response['status'] = 'err';
 }

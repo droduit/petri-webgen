@@ -52,12 +52,12 @@ $(function(){
 });
 
 function loadProcessing() {
-	var debug_mode = $('script[debug_mode]').attr("debug_mode") == 1;
-	var mdpRequired = $('script[debug_mode]').attr("mdpRequired") == 1;
+	var debug_mode = $('script[debug_mode]').attr("debug_mode");
+	var mdpRequired = $('script[debug_mode]').attr("mdpRequired");
 	
 	$('#loading').css("display","block");
 	$.post('processing.php', {
-		debug:debug_mode,
+		debug: debug_mode,
 		mdpNeeded: mdpRequired
 	}, function(html){
 		$('.content').fadeOut("fast", function(){

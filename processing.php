@@ -1,11 +1,11 @@
 <?php
 include_once('header.inc.php');
 
-if(isset($_POST['debug']) && $_POST['debug'] == 1) {
-    $debug_mode = true;
+if(isset($_POST['debug'])) {
+    $debug_mode = $_POST['debug'] == 1 ? true : false;
 }
-if(isset($_POST['mdpNeeded']) && $_POST['mdpNeeded'] == 1) {
-    $mdpRequired = true;
+if(isset($_POST['mdpNeeded'])) {
+    $mdpRequired = $_POST['mdpNeeded'] == 1 ? true : false;
 }
 
 // Chargement du fichier
@@ -26,6 +26,8 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     if(count($err) == 0) {
         
     	$nScenes = 0;
+		$nPages = 0;
+		
     	// On créé un fichier pour chaque scenes
     	foreach($sceneArray as $scene) {
     	    $content = getHeaderScene($scene);

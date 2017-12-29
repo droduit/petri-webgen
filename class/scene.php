@@ -62,7 +62,7 @@ class Scene {
 	 */
 	function bindTransition($transition) {
 		foreach($transition->getEvents() as $e) {
-			if($this->sprites[(string)$e->getElemTrigger()] != null) {
+			if(isset( $this->sprites[(string)$e->getElemTrigger()]) && !is_null($this->sprites[(string)$e->getElemTrigger()])) {
 				$this->sprites[(string)$e->getElemTrigger()]->attachEvent($e);
 			}
 		}
@@ -133,9 +133,11 @@ class Scene {
 		$scripts = "";
 		
 		// Custom JS entré par l'utilisateur
-		foreach($this->sceneArray['js'] as $js) {
-		    $scripts .= $js;
-		    if(substr($js, -1) != ";") $scripts .= ";";
+		if(isset($this->sceneArray['js'])) {
+			foreach($this->sceneArray['js'] as $js) {
+				$scripts .= $js;
+				if(substr($js, -1) != ";") $scripts .= ";";
+			}
 		}
 	   
 		// JS des sprites de la scene
