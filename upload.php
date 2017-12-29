@@ -22,16 +22,16 @@ if(count($_FILES) == 0 && count($_POST) == 0) {
     </div>
 </div>
 
-<div class="res"></div>
+<div class="message" style="display:none; position:fixed; bottom:0; left:0; width:100%; padding: 10px; text-align:center; background:rgba(0,0,0,0.8); color:white; font-size:0.8em"></div>
 
 <script>
 $(document).ready(function () {
-	$("#form1 > .info").click(function(){
-        $('#form1 input[type="file"]').click();
+	$("form > .info").click(function(){
+        $(this).parent('form').find('input[type="file"]').click();
     });
 
 	$(document).on('drop dragover', function(e) {
-		$('#form1 .info').html("Le drag and drop n'est pas pris en charge.<br>Sélectionne le fichier à partir du bouton ci-dessous");
+		showMessage("Veuillez sélectionner vos fichiers en cliquant sur le bouton ci-dessus.");
 		e.preventDefault();
 	});
 
@@ -48,10 +48,11 @@ $(document).ready(function () {
 
 		console.log("file", file);
 
+
         if(!file.name.match('json')) {              
-            $("#form1 .info").html("Veuillez sélectionner un fichier JSON");
+            showMessage("Veuillez sélectionner un fichier JSON");
         }else if(file.size > 1.5e7){
-            $("#form1 .info").html("Taille maximale de fichier : 10 MB");
+            showMessage("Taille maximale de fichier : 10 MB");
         }else{
         	$('.modal').fadeIn();
         	
@@ -73,15 +74,15 @@ $(document).ready(function () {
                 	$('#form2').fadeIn();
 
                 }else if(response.status == 'type_err'){
-                    $("#form1 .info").html("Veuillez sélectionner un fichier JSON");
+                    showMessage("Veuillez sélectionner un fichier JSON");
                 }else{
-                    $("#form1 .info").html("Un problème s'est produit. Veuillez réésayer");
+                    showMessage("Un problème s'est produit. Veuillez réésayer");
                 }
                 
                 $('.modal').fadeOut();
             };
         }
-        
+
     });
 
 
@@ -92,7 +93,7 @@ $(document).ready(function () {
         var data = new FormData();        
 
         if(file.size > 400){
-            $("#form2 .info").html("Taille maximale de fichier : 400 octets");
+            showMessage("Taille maximale de fichier : 400 octets");
         }else{
         	$('.modal').fadeIn();
         	
@@ -113,7 +114,7 @@ $(document).ready(function () {
         			<?php } ?>
         			
                 } else{
-                    $("#form2 .info").html("Un problème s'est produit. Veuillez réésayer");
+                    showMessage("Un problème s'est produit. Veuillez réésayer");
                 }
 
                 $('.modal').fadeOut();
@@ -124,6 +125,9 @@ $(document).ready(function () {
 });
 
 function pwdProcess() {
+	$('#form1, #form2').remove();
+	$('.form-div').html('<div style="text-align:center; padding:15px">En attente du mot de passe</div>');
+	
 	$('.modal-layer').fadeIn(500);
 	$('.modal-win').toggle('clip');
 

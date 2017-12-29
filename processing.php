@@ -28,15 +28,28 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	$nScenes = 0;
 		$nPages = 0;
 		
+		if(!$debug_mode) {
+			// Création du dossier dans lequel insérer les fichiers générés
+			if(!file_exists(getDirGeneration())) 
+				mkdir(getDirGeneration(), 0777);
+			
+			// Copie des dépendances
+			copyr(OUTPUT_DIR."/".DEPENDENCIES_DIR, getDirGeneration()."/".DEPENDENCIES_DIR);
+			
+			$dirGeneration = getDirGeneration();
+		} else {
+			$dirGeneration = OUTPUT_DIR;
+		}
+		
     	// On créé un fichier pour chaque scenes
     	foreach($sceneArray as $scene) {
     	    $content = getHeaderScene($scene);
     	    $content .= $scene->getHTMLContent();
     	    $content .= getFooter();
     	    
-    	    $filename = SCENE_DIR."/".getSceneFilename($scene->getId());
+    	    $filename = getSceneFilename($scene->getId());
     	    array_push($fileList, $filename);
-    	    createFile($filename, $content);
+    	    createFile($dirGeneration."/".$filename, $content);
     	    
     	    $nScenes++;
     	}
@@ -49,9 +62,9 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	    $content .= getFooter();
     	    
     	    // On créé un fichier pour chaque vues
-    	    $filename = OUTPUT_DIR."/".getViewFilename($view->getId());
+    	    $filename = getViewFilename($view->getId());
     	    array_push($fileList, $filename);
-    	    createFile($filename, $content);
+    	    createFile($dirGeneration."/".$filename, $content);
     	    
     	    $nPages++;
     	}
@@ -59,9 +72,9 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	// Création de la page d'index
     	if($index != NULL) {
     	    $content = getContentIndex($index);
-        	$filename = OUTPUT_DIR."/index.html";
+        	$filename = "index.html";
         	$index['filename'] = $filename;
-        	createFile($filename, $content);
+        	createFile($dirGeneration."/".$filename, $content);
     	}
     }
     // ---------------------------------------------------------
@@ -93,7 +106,7 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	
     	<?php
     	if($index != NULL) { ?>
-    		<a class="startIndex" href="<?= $index['filename'] ?>">Démarrer mon site</a>
+    		<a class="startIndex" href="<?= getDirGeneration()."/".$index['filename'] ?>">Démarrer mon site</a>
     	<?php 
     	}
     	?>
@@ -116,7 +129,7 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	       $typesFile[$typeF]++;
     	    }
     	    
-            echo '<a href="'.$f.'" typefile="'.$typeF.'" style="display:none"><li><img src="img/arrow-r.svg" width="16px" align-auto> '.$filename.'</li></a>';
+            echo '<a href="'.getDirGeneration()."/".$f.'" typefile="'.$typeF.'" style="display:none"><li><img src="img/arrow-r.svg" width="16px" align-auto> '.$filename.'</li></a>';
     	}
     	
     	

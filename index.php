@@ -24,7 +24,7 @@ if(count($_POST) == 0) {?>
 
 		<div class="wrapper">
 			<div class="title">Petri <img src="img/arrow-r.svg" width="16px" align-auto> Website</div>
-			
+
 			<div class="content">
 				
 				<div id="loading" style="display:none">
@@ -72,6 +72,9 @@ if(count($_POST) == 0) {?>
 			</div>
 			<div class="bt-ok">Ok</div>
 		</div>
+		
+		<div class="message" style="display:none; position:fixed; bottom:0; left:0; width:100%; padding: 10px; text-align:center; background:rgba(0,0,0,0.8); color:white; font-size:0.8em"></div>
+
 	</body>
 	
 </html>

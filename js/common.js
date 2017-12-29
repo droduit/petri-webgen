@@ -49,7 +49,24 @@ $(function(){
 		});
 	});
 	
+	$('body').on('click', '.button.export', function(){
+		var debug_mode = $('script[debug_mode]').attr("debug_mode");
+		$.post('create-zip.php', { debug: debug_mode }, function(res){
+			var response = JSON.parse(res);
+			if(response.status == "ok") {
+				document.location = response.file;
+			} else {
+				showMessage('Problème lors de la création de l\'archive. Réésayer!');
+			}
+		});
+	});
+	
 });
+
+function showMessage(message) {
+	$('.message').html(message).slideDown();
+	setTimeout(function(){ $('.message').slideUp(); }, 2000);
+}
 
 function loadProcessing() {
 	var debug_mode = $('script[debug_mode]').attr("debug_mode");
