@@ -61,69 +61,83 @@ foreach($petri['scenes'] as $s) {
 
 // Groupement des scenes dans des pages =========================
 $views = array();
-// Pour chaque vue, on utilise le tableau avec les scene ayant le flag isInView=true
-foreach($petri['views'] as $view) {
-    $viewObj = new View($view['id'], $view['title']);
-    
-    foreach($view['scenes'] as $frame) {
-        $viewObj->addScene($frame['frame-id'], $sceneArray[$frame['scene-id']], $frame['style']);
-    }
-    array_push($views, $viewObj);
+if(isset($petri['views'])) {
+	// Pour chaque vue, on utilise le tableau avec les scene ayant le flag isInView=true
+	foreach($petri['views'] as $view) {
+		$viewObj = new View($view['id'], isset($view['title']) ? $view['title'] : "");
+		
+		if(isset($view['scenes'])) {
+			foreach($view['scenes'] as $frame) {
+				if(!isset($sceneArray[$frame['scene-id']]))
+					array_push($err, "La scène <b>".$frame['scene-id']."</b> est incluse dans la vue <b>".$view['id']."</b>, mais cette scène n'existe pas");
+				else
+					$viewObj->addScene($frame['frame-id'], $sceneArray[$frame['scene-id']], $frame['style']);
+			}
+		} else {
+			array_push($err, "La vue <b>".$view['id']."</b> ne contient aucune scène");
+		}
+		array_push($views, $viewObj);
+	}
 }
 // ==============================================================
 
 
 // Transitions ==================================================
-foreach($petri['transitions'] as $trans) {
-    
-    $assocOut = array();
-    foreach($trans['associationOut']['regles'] as $aO) {
-        $dests = array();
-        foreach($aO['dest'] as $dest) { 
-			if(!isset($dest['targets']))	$dest['targets'] = null;
-			if(!isset($dest['js']))			$dest['js'] = null;
-			if(!isset($dest['id']))			$dest['id'] = null;
+if(isset($petri['transitions'])) {
+	foreach($petri['transitions'] as $trans) {
+		
+		$assocOut = array();
+		foreach($trans['associationOut']['regles'] as $aO) {
+			$dests = array();
+			foreach($aO['dest'] as $dest) { 
+				if(!isset($dest['targets']))	$dest['targets'] = null;
+				if(!isset($dest['js']))			$dest['js'] = null;
+				if(!isset($dest['id']))			$dest['id'] = null;
+				
+				array_push($dests, new Dest($dest['type'], $dest['id'], $dest['targets'], $dest['js']));
+			}
+			$assocOut[$aO['id']] = $dests;
+		}
+		
+		foreach($trans['associationIn']['regles'] as $aI) {
+			$dests = $assocOut[$aI['id']];
 			
-            array_push($dests, new Dest($dest['type'], $dest['id'], $dest['targets'], $dest['js']));
-        }
-        $assocOut[$aO['id']] = $dests;
-    }
-    
-    foreach($trans['associationIn']['regles'] as $aI) {
-        $dests = $assocOut[$aI['id']];
-        
-        
-        foreach($aI['scenes'] as $sceneFrom) {
-            $transition = new Transition($aI['id'], null);
-            
-            // Creation des evenements pour chaque sprites de la scene
-            foreach($aI['sprites'] as $sprite) {
-                $split = explode('.', $sprite);
-                if(count($split) != 2) {
-                    $err[] = "La regle id=".$aI['id']." de la transition id=".$trans['id']." est malformée. les sprites doivent avoir la forme spriteId.eventName";
-                }
-               
-                $eventType = $split[1];
-                $elemTrigger = $split[0];
-                
-                $event = new Event($eventType, $elemTrigger, $dests);
-                
-                // Ajout de l'evenement à la transition
-                $transition->addEvent($event);
-            }
-            
-            // Attachenement de la transition à la scene
-            $sceneArray[$sceneFrom]->bindTransition($transition);
-        }
-    }
+			
+			foreach($aI['scenes'] as $sceneFrom) {
+				$transition = new Transition($aI['id'], null);
+				
+				// Creation des evenements pour chaque sprites de la scene
+				foreach($aI['sprites'] as $sprite) {
+					$split = explode('.', $sprite);
+					if(count($split) != 2) {
+						$err[] = "La règle id=".$aI['id']." de la transition id=".$trans['id']." est malformée. Les sprites doivent avoir la forme: <i>spriteId.eventName</i>";
+					}
+				   
+					$eventType = $split[1];
+					$elemTrigger = $split[0];
+					
+					$event = new Event($eventType, $elemTrigger, $dests);
+					
+					// Ajout de l'evenement à la transition
+					$transition->addEvent($event);
+				}
+				
+				// Attachenement de la transition à la scene
+				if(!isset($sceneArray[$sceneFrom]))
+					array_push($err, "Une transition est attachée à la scène <b>".$sceneFrom."</b>, mais cette scène n'existe pas");
+				else
+					$sceneArray[$sceneFrom]->bindTransition($transition);
+			}
+		}
+	}
 }
 // ==============================================================
 
 // On définit la page index =====================================
-$index = $petri['index'];
+$index = isset($petri['index']) ? $petri['index'] : null;
 // ==============================================================
 
 // Récupération des dépendences personnalisées de l'utilisateur==
-$dependencies = $petri['include'];
+$dependencies = isset($petri['include']) ? $petri['include'] : null;
 // ==============================================================
 ?>

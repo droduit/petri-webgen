@@ -61,20 +61,32 @@ function getDefaultDependencies() {
     $path = DEPENDENCIES_DIR;
     
     global $dependencies;
-    $userDep = $dependencies;
+    $userDep = is_null($dependencies) ? array() : $dependencies;
     
     $js = array();
     array_push($js, 'jquery-3.2.1.min.js');
     array_push($js, 'jquery-ui.min.js');
-    $js = array_merge($js, $userDep['js']);
+    if(isset($userDep['js']))
+		$js = array_merge($js, $userDep['js']);
     
     $css = array();
     array_push($css, 'reset.css');
     array_push($css, 'jquery-ui.min.css');
     array_push($css, 'jquery-ui.structure.min.css');
     array_push($css, 'jquery-ui.theme.min.css');
-    $css = array_merge($css, $userDep['css']);
+    if(isset($userDep['css']))
+		$css = array_merge($css, $userDep['css']);
     
+	if(isset($userDep['libraries'])) {
+		if(in_array("bootstrap", $userDep['libraries'])) {
+			array_push($css, 'bootstrap/bootstrap.min.css');
+			array_push($css, 'bootstrap/bootstrap-grid.min.css');
+			array_push($css, 'bootstrap/bootstrap-reboot.min.css');
+			array_push($js, 'bootstrap/bootstrap.min.js');
+			array_push($js, 'bootstrap/bootstrap.bundle.min.js');
+		}
+	}
+	
     $depHTML = "";
     foreach($js as $src) {
         $depHTML .= '<script src="'.$path.'/js/'.$src.'"></script>';
@@ -183,7 +195,8 @@ function createFile($path, $content) {
  * @return Le dossier dans lequel on met les fichiers générés
  */
 function getDirGeneration() {
-	return OUTPUT_DIR.'/petri_'.crc32(session_id());
+	global $debug_mode;
+	return $debug_mode ? OUTPUT_DIR : OUTPUT_DIR.'/petri_'.crc32(session_id());
 }
 
 /**
@@ -196,8 +209,15 @@ function getDirGeneration() {
  * @param       string   $dest      Destination path
  * @return      bool     Returns TRUE on success, FALSE on failure
  */
-function copyr($source, $dest)
-{
+function copyr($source, $dest) {
+	global $dependencies;
+    $userDep = is_null($dependencies) ? array() : $dependencies;
+	
+	$bootstrap = false;
+	if(isset($userDep['libraries'])) {
+		$bootstrap = in_array("bootstrap", $userDep['libraries']);
+	}
+	
     // Check for symlinks
     if (is_link($source)) {
         return symlink(readlink($source), $dest);
@@ -213,11 +233,13 @@ function copyr($source, $dest)
         mkdir($dest);
     }
 
+	
+	
     // Loop through the folder
     $dir = dir($source);
     while (false !== $entry = $dir->read()) {
         // Skip pointers
-        if ($entry == '.' || $entry == '..') {
+        if ($entry == '.' || $entry == '..' || (!$bootstrap && $entry=='bootstrap') ) {
             continue;
         }
 
@@ -315,5 +337,28 @@ function genStamp($filename, $pwd) {
 function isJSON($filename) {
     $fileparts = pathinfo($filename);
     return $fileparts['extension'] == "json";
+}
+
+function getJSONErrorMessage() {
+	switch (json_last_error()) {
+		case JSON_ERROR_DEPTH:
+			return 'Maximum stack depth exceeded';
+		break;
+		case JSON_ERROR_STATE_MISMATCH:
+			return 'Underflow or the modes mismatch';
+		break;
+		case JSON_ERROR_CTRL_CHAR:
+			return 'Unexpected control character found';
+		break;
+		case JSON_ERROR_SYNTAX:
+			return 'Syntax error, malformed JSON';
+		break;
+		case JSON_ERROR_UTF8:
+			return 'Malformed UTF-8 characters, possibly incorrectly encoded';
+		break;
+		default:
+			return 'Unknown error';
+		break;
+	}
 }
 ?>

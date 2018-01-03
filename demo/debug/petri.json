@@ -1,0 +1,114 @@
+{
+	"index": {
+		"type":"scene",
+		"id":"scene1"
+	},
+	"include":{
+		"libraries": ["bootstrap"]
+	},
+	"scenes":[
+      {
+         "id":"scene1",
+		 "title":"Bootstrap demo",
+		 "css":{
+			"[class*=col]": {
+				"padding-top":"1rem",
+				"padding-bottom":"1rem",
+				"background-color":"rgba(86, 61, 124, .15)",
+				"border": "1px solid rgba(86, 61, 124, .2)"
+			},
+			".row":{
+				"display": "flex",
+				"flex-wrap": "wrap",
+				"margin-right": "-15px",
+				"margin-left": "-15px",
+				"margin-bottom": "1rem"
+			},
+			".scontainer": {
+				"width": "90%",
+				"margin-right": "auto",
+				"margin-left": "auto",
+				"margin-top":"50px"
+			}
+		 },
+         "sprites":[
+			{	"id":"container", "nature":"div", "childs":[1,2,6,10]},
+			{ "id":1, "nature":"h3", "value":"3 grid tiers" },
+            {
+               "id": 2,
+               "nature":"div",
+               "attr":{"class":"row"},
+			   "childs":[3,4,5]
+            },
+			{
+				"id": 3,
+				"nature":"div",
+				"attr":{"class":"col-4"},
+				"value":".col-4"
+			},
+			{
+				"id": 4,
+				"nature":"div",
+				"attr":{"class":"col-4"},
+				"value":".col-4"
+			},
+			{
+				"id": 5,
+				"nature":"div",
+				"attr":{"class":"col-4"},
+				"value":".col-4"
+			},
+			
+			{
+               "id": 6,
+               "nature":"div",
+               "attr":{"class":"row"},
+			   "childs":[7,8,9]
+            },
+			{
+				"id": 7,
+				"nature":"div",
+				"attr":{"class":"col-sm-4"},
+				"value":".col-sm-4"
+			},
+			{
+				"id": 8,
+				"nature":"div",
+				"attr":{"class":"col-sm-4"},
+				"value":".col-sm-4"
+			},
+			{
+				"id": 9,
+				"nature":"div",
+				"attr":{"class":"col-sm-4"},
+				"value":".col-sm-4"
+			},
+			
+			{
+               "id": 10,
+               "nature":"div",
+               "attr":{"class":"row"},
+			   "childs":[11,12,13]
+            },
+			{
+				"id": 11,
+				"nature":"div",
+				"attr":{"class":"col-md-3"},
+				"value":".col-md-3"
+			},
+			{
+				"id": 12,
+				"nature":"div",
+				"attr":{"class":"col-md-6"},
+				"value":".col-md-6"
+			},
+			{
+				"id": 13,
+				"nature":"div",
+				"attr":{"class":"col-md-3"},
+				"value":".col-md-3"
+			}
+         ]
+      }
+   ]
+}

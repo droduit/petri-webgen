@@ -9,9 +9,18 @@ if(isset($_POST['mdpNeeded'])) {
 }
 
 // Chargement du fichier
-$json_filename = $debug_mode ? "petri.json" : $_SESSION['file'];
-$json = file_get_contents($json_filename);
-$petri = json_decode($json, true);
+$json_filename = $debug_mode ? "demo/debug/petri.json" : $_SESSION['file'];
+if(!file_exists($json_filename)) {
+	unset($_SESSION['file']);
+    unset($_SESSION['pwd']);
+    unset($_SESSION['stamp']);
+	array_push($err, "Le fichier <b>".$json_filename."</b> n'existe pas.");
+	echo '<meta http-equiv="refresh" content="0;URL=index.php">';
+	$petri = null;
+} else {
+	$json = file_get_contents($json_filename);
+	$petri = json_decode($json, true);
+}
 
 
 if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
@@ -19,7 +28,15 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
 } else {
     // Parse du fichier, traduction du JSON en HTML via la création
     // des objets indispensables à la génération des pages
-    include_once('parser.php');
+    if(!is_null($petri)) 
+		include_once('parser.php');
+	
+	if(!isset($err))
+		$err = array();
+	
+	if($petri == null && json_last_error() !== JSON_ERROR_NONE) {
+		array_push($err, "Le fichier JSON contient des erreurs : <br>".getJSONErrorMessage());
+	}
     
     // Physical files generation --------------------------
     $fileList = array();
@@ -105,7 +122,7 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	<script>$(function(){ setTimeout(function(){ $('.success').slideUp(800); }, 4000); });</script>
     	
     	<?php
-    	if($index != NULL) { ?>
+    	if(!is_null($index)) { ?>
     		<a class="startIndex" href="<?= getDirGeneration()."/".$index['filename'] ?>">Démarrer mon site</a>
     	<?php 
     	}
@@ -152,7 +169,10 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     });
     </script>
     
+	<?php if(count($err) <= 0) {?> 
     <div class="export button">Exporter le site</div>
+	<?php } ?>
+	
     <?php if(!$debug_mode) {?>
     <div class="btUploadNew button">Convertir un autre fichier</div>
     <?php } ?>
