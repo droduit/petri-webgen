@@ -72,6 +72,12 @@
 				"value":".col-sm-4"
 			},
 			{
+               "id": 10,
+               "nature":"div",
+               "attr":{"class":"row"},
+			   "childs":[13,12,11]
+            },
+			{
 				"id": 8,
 				"nature":"div",
 				"attr":{"class":"col-sm-4"},
@@ -84,14 +90,9 @@
 				"value":".col-sm-4"
 			},
 			
+			
 			{
-               "id": 10,
-               "nature":"div",
-               "attr":{"class":"row"},
-			   "childs":[11,12,13]
-            },
-			{
-				"id": 11,
+				"id": 13,
 				"nature":"div",
 				"attr":{"class":"col-md-3"},
 				"value":".col-md-3"
@@ -103,9 +104,9 @@
 				"value":".col-md-6"
 			},
 			{
-				"id": 13,
+				"id": 11,
 				"nature":"div",
-				"attr":{"class":"col-md-3"},
+				"attr":{"class":"col-md-3", "test":"rien"},
 				"value":".col-md-3"
 			}
          ]

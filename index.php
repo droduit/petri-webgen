@@ -1,6 +1,6 @@
 <?php 
 include_once('header.inc.php');
-$debug_mode = false;
+$debug_mode = true;
 $mdpRequired = true;
 
 if(isset($_POST['newUpload']) || $debug_mode) {

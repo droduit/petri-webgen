@@ -340,25 +340,28 @@ function isJSON($filename) {
 }
 
 function getJSONErrorMessage() {
+	$mess = "";
 	switch (json_last_error()) {
 		case JSON_ERROR_DEPTH:
-			return 'Maximum stack depth exceeded';
+			$mess = 'Maximum stack depth exceeded';
 		break;
 		case JSON_ERROR_STATE_MISMATCH:
-			return 'Underflow or the modes mismatch';
+			$mess = 'Underflow or the modes mismatch';
 		break;
 		case JSON_ERROR_CTRL_CHAR:
-			return 'Unexpected control character found';
+			$mess = 'Unexpected control character found';
 		break;
 		case JSON_ERROR_SYNTAX:
-			return 'Syntax error, malformed JSON';
+			$mess = 'Erreur de syntaxe, JSON malformé';
 		break;
 		case JSON_ERROR_UTF8:
-			return 'Malformed UTF-8 characters, possibly incorrectly encoded';
+			$mess = 'Malformed UTF-8 characters, possibly incorrectly encoded';
 		break;
 		default:
-			return 'Unknown error';
+			$mess = '->';
 		break;
 	}
+	$mess .= ". (".json_last_error_msg().")";
+	return $mess;
 }
 ?>

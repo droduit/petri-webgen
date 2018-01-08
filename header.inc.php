@@ -2,6 +2,7 @@
 // Dependencies
 require_once('utils/const.php');
 require_once('utils/common.php');
+
 require_once('class/event.php');
 require_once('class/scene.php');
 require_once('class/sprite.php');
