@@ -1,4 +1,8 @@
-# Transformation de scénarios multimédias modélisés avec des réseaux de Pétri, en application WEB exploitant la combinaison HTML-CSS-JS
+# Convert any multimedia scenarios described by a Petri network, into a web application exploiting HTML-CSS-JS
+Original title : Transformation de scénarios multimédias modélisés avec des réseaux de Pétri, en application WEB exploitant la combinaison HTML-CSS-JS
+
+## Documentation
+Please see the <a href="https://github.com/droduit/petri-media/blob/master/doc.pdf">full PDF doc</a>
 
 ## Description
 Les réseaux de Pétri permettent de modéliser un nombre infini d’applications très diverses. De manière basique, ce sont des schémas composés de 4 éléments principaux : Token, Places, Transitions et arcs : 
@@ -9,10 +13,3 @@ Les réseaux de Pétri permettent de modéliser un nombre infini d’application
 
 Un logiciel de modélisation de réseaux de Pétri pour générer des fichiers en représentant une description au format JSON est déjà existant. Nous voulons ici utiliser le JSON généré, correspondant à la description d’applications WEB, et ainsi concevoir une 
 prochaine étape, qui transformera le réseau de Pétri en une application WEB fonctionnelle, exploitant la combinaison HTML-CSS-JS. 
-
-PHP n'est pas utilisé dans le résultat généré. La navigation se fait en javascript et seul des pages HTML/CSS sont générées. 
-Le moteur de génération des page et de parsage des fichiers JSON cependant est écrit intégralement en PHP et un semblant de javascript/Jquery est utilisé pour produire une interface utilisateur conviviale.
-
-## Documentation
-Please see the <a href="https://github.com/droduit/petri-media/blob/master/doc.pdf">full PDF doc</a>
-
