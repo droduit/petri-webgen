@@ -12,7 +12,7 @@ Petri networks allow modeling an infinite number of diverse applications. At a b
 
 An existing software for Petri network modeling generates files representing descriptions in JSON format. Here, we aim to utilize the generated JSON, which corresponds to the description of web applications, to design the next step. This step will transform the Petri network into a functional web application, making use of HTML-CSS-JS combination.
 
-## Déploiement
+## Deployment
 1. Create a folder named `uploads` with write permissions.
 2. Ensure that the `generated` folder has write permissions.
 
