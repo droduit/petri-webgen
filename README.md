@@ -1,23 +1,21 @@
-# Convert any multimedia scenarios described by a Petri network, into a web application exploiting HTML-CSS-JS
-Original title : Transformation de scénarios multimédias modélisés avec des réseaux de Pétri, en application WEB exploitant la combinaison HTML-CSS-JS
+# Convert any multimedia scenarios described by a Petri network, into a web application
 
 ## Documentation
-Please see the <a href="https://github.com/droduit/petri-media/blob/master/doc.pdf">full PDF doc</a>
+Please refer to the <a href="https://github.com/droduit/petri-media/blob/master/doc.pdf">complete PDF documentation</a>.
 
 ## Description
-Les réseaux de Pétri permettent de modéliser un nombre infini d’applications très diverses. De manière basique, ce sont des schémas composés de 4 éléments principaux : Token, Places, Transitions et arcs : 
-1.	Token -> Sprites : objets définis par des propriétés
-2.	Places, activités, ou « scenes » : contenant un ou plusieurs « sprite »
-3.	Transitions : gère les « events » pour passer d’une activité à une autre
-4.	Arcs : reliant les places aux transitions.
+Petri networks allow modeling an infinite number of diverse applications. At a basic level, they consist of four main elements: Tokens, Places, Transitions, and Arcs:
+1.	Token -> Sprites : objects defined by properties.
+2.	Places, activities, or « scenes » : containers holding one or multiple sprites.
+3.	Transitions : manage « events » to move from one activity to another.
+4.	Arcs : connect places to transitions.
 
-Un logiciel de modélisation de réseaux de Pétri pour générer des fichiers en représentant une description au format JSON est déjà existant. Nous voulons ici utiliser le JSON généré, correspondant à la description d’applications WEB, et ainsi concevoir une 
-prochaine étape, qui transformera le réseau de Pétri en une application WEB fonctionnelle, exploitant la combinaison HTML-CSS-JS. 
+An existing software for Petri network modeling generates files representing descriptions in JSON format. Here, we aim to utilize the generated JSON, which corresponds to the description of web applications, to design the next step. This step will transform the Petri network into a functional web application, making use of HTML-CSS-JS combination.
 
 ## Déploiement
-1. Créer un dossier `uploads` avec les droits en écriture
-2. Assurez-vous que le dossier `generated` possède les droits en écriture
+1. Create a folder named `uploads` with write permissions.
+2. Ensure that the `generated` folder has write permissions.
 
-## Demo
-Le dossier `demo` contient des exemples de réseau de Petri au format JSON.
-Le mot de passe de `ex1` est `demo`.
+## Demo
+The `demo` folder contains examples of Petri networks in JSON format.
+The password for `ex1` is `demo`.
