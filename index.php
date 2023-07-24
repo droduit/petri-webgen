@@ -13,7 +13,7 @@ if(count($_POST) == 0) {?>
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Petri Nets to Web application converter</title>
+		<title>Petri WebGen - Convert Petri Nets to Web experiences</title>
 		<meta charset="UTF-8">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
