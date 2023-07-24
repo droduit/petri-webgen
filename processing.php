@@ -1,16 +1,16 @@
 <?php
-include_once('header.inc.php');
+include_once ('header.inc.php');
 
-if(isset($_POST['debug'])) {
+if (isset($_POST['debug'])) {
     $debug_mode = $_POST['debug'] == 1 ? true : false;
 }
-if(isset($_POST['mdpNeeded'])) {
+if (isset($_POST['mdpNeeded'])) {
     $mdpRequired = $_POST['mdpNeeded'] == 1 ? true : false;
 }
 
 // Chargement du fichier
 $json_filename = $debug_mode ? "demo/debug/petri.json" : $_SESSION['file'];
-if(!file_exists($json_filename)) {
+if (!file_exists($json_filename)) {
 	unset($_SESSION['file']);
     unset($_SESSION['pwd']);
     unset($_SESSION['stamp']);
@@ -23,31 +23,31 @@ if(!file_exists($json_filename)) {
 }
 
 
-if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
+if (!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     include_once('upload.php');
 } else {
     // Parse du fichier, traduction du JSON en HTML via la création
     // des objets indispensables à la génération des pages
-    if(!is_null($petri)) 
+    if (!is_null($petri)) 
 		include_once('parser.php');
 	
-	if(!isset($err))
+	if (!isset($err))
 		$err = array();
 	
-	if($petri == null && json_last_error() !== JSON_ERROR_NONE) {
+	if ($petri == null && json_last_error() !== JSON_ERROR_NONE) {
 		array_push($err, "Le fichier JSON contient des erreurs : <br>".getJSONErrorMessage());
 	}
     
     // Physical files generation --------------------------
     $fileList = array();
-    if(count($err) == 0) {
+    if (count($err) == 0) {
         
     	$nScenes = 0;
 		$nPages = 0;
 		
-		if(!$debug_mode) {
+		if (!$debug_mode) {
 			// Création du dossier dans lequel insérer les fichiers générés
-			if(!file_exists(getDirGeneration())) 
+			if (!file_exists(getDirGeneration()))
 				mkdir(getDirGeneration(), 0777);
 			
 			// Copie des dépendances
@@ -59,7 +59,7 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
 		}
 		
     	// On créé un fichier pour chaque scenes
-    	foreach($sceneArray as $scene) {
+    	foreach ($sceneArray as $scene) {
     	    $content = getHeaderScene($scene);
     	    $content .= $scene->getHTMLContent();
     	    $content .= getFooter();
@@ -73,9 +73,9 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	
     	$nViews = 0;
     	// On créé un fichier pour chaque vues
-    	foreach($views as $view) {
+    	foreach ($views as $view) {
     	    $content = getHeaderView($view->getTitle());
-    	    $content .= $view->getFramesHTML();	    
+    	    $content .= $view->getFramesHTML();
     	    $content .= getFooter();
     	    
     	    // On créé un fichier pour chaque vues
@@ -87,7 +87,7 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	}
     	
     	// Création de la page d'index
-    	if($index != NULL) {
+    	if ($index != NULL) {
     	    $content = getContentIndex($index);
         	$filename = "index.html";
         	$index['filename'] = $filename;
@@ -97,15 +97,15 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     // ---------------------------------------------------------
     
     
-    if(!checkStampSanity()) { ?>
+    if (!checkStampSanity()) { ?>
     	<div class="error">L'emprunte numérique du réseau de pétri est malformée ou a été modifiée</div>
-    <?php } 
+    <?php }
         				
-    if(count($err) > 0) {
+    if (count($err) > 0) {
         // Display Errors if there is some
         echo '<div class="error">'.count($err).' error(s) occured during the generating process</div>';
         echo '<ul>';
-        foreach($err as $er) {
+        foreach ($err as $er) {
             echo "<li>".$er."</li>";
         }
         echo '</ul>';
@@ -114,33 +114,33 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
         unset($_SESSION['pwd']);
         unset($_SESSION['stamp']);
     } else {
-        if(checkStampSanity() && getSavedStamp() != getStampOf($json_filename)) {  ?>
-        	<div class="error">Attention ! Le fichier a été modifié par rapport à l'original</div>
+        if (checkStampSanity() && getSavedStamp() != getStampOf($json_filename)) {  ?>
+        	<div class="error">The original Petri Net was altered</div>
         <?php } ?>
         
     	<div class="success"><b>Congrats!</b> Your Petri network was successfully converted into a brand new website!</div>
     	<script>$(function(){ setTimeout(function(){ $('.success').slideUp(800); }, 4000); });</script>
     	
     	<?php
-    	if(!is_null($index)) { ?>
-    		<a class="startIndex" href="<?= getDirGeneration()."/".$index['filename'] ?>">Démarrer mon site</a>
-    	<?php 
+    	if (!is_null($index)) { ?>
+    		<a class="startIndex" href="<?= getDirGeneration()."/".$index['filename'] ?>">Launch my web app</a>
+    	<?php
     	}
     	?>
     	
     	<div class="titleCat"></div>
-    	<div class="bt-back"><img src="img/arrow-r.svg" style="width:16px; transform:rotate(-180deg);" align-auto> Retour</div>
+    	<div class="bt-back"><img src="img/arrow-r.svg" style="width:16px; transform:rotate(-180deg);" align-auto> Back</div>
     	
     	<?php
     	echo '<ul class="files">';
     	$typesFile = array();
     	$indexExist = false;
-    	foreach($fileList as $f) {
+    	foreach ($fileList as $f) {
     	    $filename = str_replace(OUTPUT_DIR."/", '', $f);
     	    $typeF = explode("_", $filename)[0];
             $typeF .= "s";
     	    
-    	    if(!isset($typesFile[$typeF])) {
+    	    if (!isset($typesFile[$typeF])) {
     	        $typesFile[$typeF] = 1;
     	    } else {
     	       $typesFile[$typeF]++;
@@ -150,7 +150,7 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     	}
     	
     	
-    	foreach($typesFile as $tf => $number) {
+    	foreach ($typesFile as $tf => $number) {
     	   echo '<a href="#'.$tf.'" type="'.$tf.'"><li style="text-transform:capitalize"><img src="img/arrow-r.svg" width="16px" align-auto> '.$tf." (".$number.")</li></a>";
     	}	
     
@@ -169,14 +169,14 @@ if(!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     });
     </script>
     
-	<?php if(count($err) <= 0) {?> 
-    <div class="export button">Exporter le site</div>
+	<?php if (count($err) <= 0) {?>
+    <div class="export button">Export static files</div>
 	<?php } ?>
 	
-    <?php if(!$debug_mode) {?>
-    <div class="btUploadNew button">Convertir un autre fichier</div>
+    <?php if (!$debug_mode) {?>
+    <div class="btUploadNew button">Convert another Petri Net</div>
     <?php } ?>
 
-<?php 
+<?php
 }
 ?>

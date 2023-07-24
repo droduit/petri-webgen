@@ -111,11 +111,10 @@ class Dest {
      * @return Le nom de fichier selon si la destination est une vue ou une scene
      */
     function getFilename() {
-        if($this->getType() == "view")
+        if ($this->getType() == "view")
             return getViewFilename($this->getId());
-            else
-                return getSceneFilename($this->getId());
+        else
+            return getSceneFilename($this->getId());
     }
    
 }
-?>

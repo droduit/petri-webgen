@@ -1,6 +1,6 @@
 <?php 
 include_once('header.inc.php');
-$debug_mode = true;
+$debug_mode = false;
 $mdpRequired = true;
 
 if(isset($_POST['newUpload']) || $debug_mode) {
@@ -13,17 +13,26 @@ if(count($_POST) == 0) {?>
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>Petri modelisation to website converter</title>
+		<title>Petri Nets to Web application converter</title>
 		<meta charset="UTF-8">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 		<script src="js/jquery-3.2.1.min.js"></script>
 		<script src="js/common.js" mdpRequired="<?= $mdpRequired ? 1 : 0 ?>" debug_mode="<?= $debug_mode ? 1 : 0 ?>"></script>
 		<link rel="stylesheet" href="css/style.css" type="text/css">
+		<link rel="icon" href="img/favicon.svg">
 	</head>
 	
 	<body>
 
+		<div style="text-align: center; margin-top: 70px">
+			<img src="img/logo.svg" width="400px" />
+			
+		</div>
+
 		<div class="wrapper">
-			<div class="title">Petri <img src="img/arrow-r.svg" width="16px" align-auto> Website</div>
+			<div class="title" style="height: 15px"></div>
 
 			<div class="content">
 				
@@ -46,9 +55,10 @@ if(count($_POST) == 0) {?>
 			    }?>
 
     		</div>
+
 		</div>
 		
-		<div class="copyright">Dominique Roduit - EPFL &copy; <?= date('Y') ?></div>
+		<div class="copyright">Dominique Roduit - EPFL &copy; 2018</div>
 		
 		
 		<?php if($debug_mode) { ?>
@@ -65,12 +75,12 @@ if(count($_POST) == 0) {?>
 		<div class="modal-win">
 			<div class="content">
 				<div style="text-align:center">
-				Veuillez entrer le mot de passe<br>
-				<input type="password" id="pwd" style="width:90%; text-align:center" />
-				<div class="result"></div>
+					Please enter the password<br>
+					<input type="password" id="pwd" />
+					<div class="result"></div>
 				</div>
 			</div>
-			<div class="bt-ok">Ok</div>
+			<div class="bt-ok">Unlock</div>
 		</div>
 		
 		<div class="message" style="display:none; position:fixed; bottom:0; left:0; width:100%; padding: 10px; text-align:center; background:rgba(0,0,0,0.8); color:white; font-size:0.8em"></div>

@@ -1,18 +1,18 @@
 $(function(){
-	var debug_mode = $('script[debug_mode]').attr("debug_mode") == 1;
-	var mdpRequired = $('script[debug_mode]').attr("mdpRequired") == 1;
+	const debug_mode = $('script[debug_mode]').attr("debug_mode") == 1;
+	const mdpRequired = $('script[debug_mode]').attr("mdpRequired") == 1;
 
 	correctImg();
 	
 	$('.success, .error').css("display","none").fadeIn();
 
-	if(debug_mode) {
+	if (debug_mode) {
 		$('.gen-stamp').on('click', function(){
 			toggleModal();
-			var jsonfilename = $(this).attr("json_filename");
+			const jsonfilename = $(this).attr("json_filename");
 			
 			$('.bt-ok').unbind("click").bind('click', function(){
-				var val = $('input#pwd').val();
+				const val = $('input#pwd').val();
 				if(val.length > 0) {
 					$.post('index.php', {
 						genStamp:1,
@@ -31,7 +31,7 @@ $(function(){
 	}
 	
 	$('body').on('click', 'a[type]', function(){
-		var type = $(this).attr("type");
+		const type = $(this).attr("type");
 		$('.titleCat').html(type);
 		$('ul.files a').fadeOut("fast", function(){
 			setTimeout(function(){

@@ -21,7 +21,6 @@ class View {
 	function __construct($id, $title) {
 		$this->id = $id;
 		$this->title = $title;
-		$this->scenes = array();
 	}
 	
 	/**
@@ -33,7 +32,7 @@ class View {
 	 */
 	function getTitle() { return $this->title; }
 	/**
-	 * @return Un tableau des frames contenues dans la vue, du type Array<FrameId => Array<Scene, Position>> 
+	 * @return Un tableau des frames contenues dans la vue, du type Array<FrameId => Array<Scene, Position>>
 	 */
 	function getFrames() { return $this->frames; }
 	
@@ -57,7 +56,7 @@ class View {
 	 */
 	function getScenesIds() {
 	    $ids = array();
-	    foreach($this->frames as $f) {
+	    foreach ($this->frames as $f) {
 	        array_push($ids, $f[0]->getId());
 	    }
 	    return $ids;
@@ -69,7 +68,7 @@ class View {
 	function getFramesHTML() {
 	    $content = "";
 	    
-    	foreach($this->getFrames() as $frameId => $sceneArray) {
+    	foreach ($this->getFrames() as $frameId => $sceneArray) {
     	    $scene = $sceneArray[0];
     	    $position = $sceneArray[1];
     	    
@@ -86,18 +85,18 @@ class View {
 
 	    $keys = array_keys($position);
 	    
-	    if(!in_array('width', $keys)) {
+	    if (!in_array('width', $keys)) {
 	        $position['width'] = 0;
 	    }
 	    
-	    if(in_array('x', $keys) || in_array('y', $keys) ||
+	    if (in_array('x', $keys) || in_array('y', $keys) ||
 	        in_array('bottom', $keys) || in_array('right', $keys) ||
 	        in_array('top', $keys) || in_array('left', $keys)){
 	            
-	            if(!array_key_exists('position', $position)) {
+	            if (!array_key_exists('position', $position)) {
 	                $position['position'] = "absolute";
 	            }
-	            if(array_key_exists('x', $position)) {
+	            if (array_key_exists('x', $position)) {
 	                $position['left'] = addPx($position['x']);
 	                unset($position['x']);
 	            }
@@ -107,11 +106,10 @@ class View {
 	            }
 	    }
 	     
-	    foreach($position as $k => $v) {
-	        if($k == "width" || $k == "height") {
-	            if($v == 0) $v = "100%";
-	            else $v = addPx($v);
-	        }    
+	    foreach ($position as $k => $v) {
+	        if ($k == "width" || $k == "height") {
+	            $v = ($v == 0) ? "100%" : addPx($v);
+	        }
 	        $positionCss .= $k.":".$v.";";
 	    }
 	    
@@ -125,4 +123,3 @@ class View {
 	}
 	
 }
-?>

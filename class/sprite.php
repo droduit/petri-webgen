@@ -78,7 +78,7 @@ class Sprite {
 	 * @param (Array<String>) $props : Le ou les attributs à ajouter, dans un tableau
 	 */
 	function addProps($props) {
-	    if($props != NULL)
+	    if ($props != NULL)
 	       $this->props = array_merge($this->props, $props);
 	}
 	
@@ -87,7 +87,7 @@ class Sprite {
 	 * @param Array<[type, duration, delay, effect]> $animations : nouvelles animations
 	 */
 	function addAnimations($animations) {
-	    if(!is_null($animations))
+	    if (!is_null($animations))
 	       $this->animations = array_merge($this->animations, $animations);
 	}
 	
@@ -127,7 +127,7 @@ class Sprite {
 	 */
 	function getChilds() {
 	    $childs = array();
-	    foreach($this->getChildsIds() as $childId) {
+	    foreach ($this->getChildsIds() as $childId) {
 	        $childs[] = $this->getSceneParent()->getSprite($childId);
 	    }
 	    return $childs;
@@ -142,21 +142,21 @@ class Sprite {
 	}
 	
 	/**
-	 * @return Les identifiants uniques de tous les sprites enfants contenus par ce sprite
+	 * @return Array Les identifiants uniques de tous les sprites enfants contenus par ce sprite
 	 */
 	function getAllChildsIds() {
 	    return $this->allChildsIds;
 	}
 	
 	/**
-	 * @return Tous les objets Sprite enfants contenu par ce
+	 * @return Array Tous les objets Sprite enfants contenu par ce
 	 * sprite dans leur ordre hiérarchique donné par tree traversal
 	 */
 	function getAllChildsInOrder() {
 	    $childsIds = $this->getAllChildsIds();
-	    if($childsIds == null) return null;  
+	    if ($childsIds == null) return null;  
 	    $allChilds = array();
-	    foreach($childsIds as $c) {
+	    foreach ($childsIds as $c) {
 	        array_push($allChilds, $this->getSceneParent()->getSprite($c));
 	    }
 	    return $allChilds;
@@ -164,40 +164,44 @@ class Sprite {
 	
 	/**
 	 * Génère le code HTML représentant graphiquement ce sprite
-	 * @return Le code HTML représentant ce sprite
+	 * @return String Le code HTML représentant ce sprite
 	 */
 	function getHTML() {
 		$html = "";
 		
 		$toRender = $this->getAllChildsInOrder();
 		
-		if($toRender == null) 
+		if ($toRender == null) {
 		    $toRender = array($this);
-		
+		}
+
 		$lastChilds = array();
-		$onlySpritesWithChilds = array_filter($toRender, function($sprite){ return $sprite->getChildsIds() != null; });
-		foreach($onlySpritesWithChilds as $sprite) {
-		    $lastChildId = array_pop($sprite->getAllChildsIds());
+		$onlySpritesWithChilds = array_filter($toRender, function($sprite){
+			return $sprite->getChildsIds() != null;
+		});
+		foreach ($onlySpritesWithChilds as $sprite) {
+			$allChildsIds = $sprite->getAllChildsIds();
+		    $lastChildId = array_pop($allChildsIds);
 		    
-		    if(isset($lastChilds[$lastChildId])) {
+		    if (isset($lastChilds[$lastChildId])) {
 		        array_push($lastChilds[$lastChildId], $sprite->getId());
 		    } else {
 		      $lastChilds[$lastChildId] = array($sprite->getId());
 		    }
 		}
 		
-		foreach($lastChilds as $k => $v) {
+		foreach ($lastChilds as $k => $v) {
 		    $lastChilds[$k] = array_reverse($v);
 		}
 
 		$closeBuffer = array();
-		foreach($toRender as $sprite) {
+		foreach ($toRender as $sprite) {
 		    $currentId = $sprite->getId();
 		    
     		$elmType = $sprite->type;
     		
-    		if($elmType == "video") {
-    		    if(strpos($sprite->props['attr']['src'], '://') != false) {
+    		if ($elmType == "video") {
+    		    if (strpos($sprite->props['attr']['src'], '://') != false) {
     				$elmType = "iframe";
     				$sprite->props['attr']['src'] = str_replace('watch?v=', '/embed/', $sprite->props['attr']['src']);
     				$sprite->props['attr']['frameborder'] = "0";
@@ -211,15 +215,15 @@ class Sprite {
     		            .$sprite->getHTMLAttributes().' ';
     		
             // Si une animation in existe, on masque l'élément au chargement
-            foreach($sprite->animations as $anim) {
-                if($anim['type'] == "in") {
+            foreach ($sprite->animations as $anim) {
+                if ($anim['type'] == "in") {
                     $html .= 'style="display:none" ';
                     break;
                 }
             }
     		
-			if(isset($sprite->props['attr'])) {
-				if(!isset($sprite->props["attr"]['class'])) {
+			if (isset($sprite->props['attr'])) {
+				if (!isset($sprite->props["attr"]['class'])) {
 					$html.= ' class="'.$sprite->name.'"';
 				} else {
 					$html.= ' class="'.$sprite->name.' '.$sprite->props["attr"]['class'].'"';
@@ -228,11 +232,11 @@ class Sprite {
 				$html.= ' class="'.$sprite->name.'"';
 			}
     
-			if($closingBalise) {
+			if ($closingBalise) {
 			    $html .= '>'.$sprite->value;
 			    
 			    $closeBalise = '</'.$elmType.'>';
-			    if($sprite->getChildsIds() == null) {
+			    if ($sprite->getChildsIds() == null) {
 			        $html .= $closeBalise;
 			    } else {
 			        $closeBuffer[$currentId] = $closeBalise;
@@ -242,15 +246,14 @@ class Sprite {
 			}
 			
 			
-			if(array_key_exists($currentId, $lastChilds)) {
-			    foreach($lastChilds[$currentId] as $idParentToClose) {
+			if (array_key_exists($currentId, $lastChilds)) {
+			    foreach ($lastChilds[$currentId] as $idParentToClose) {
 			        $html .= $closeBuffer[$idParentToClose];
 			    }
 			}
 			
 		}
 	
-		
 		return $html;
 	}
 	
@@ -263,17 +266,17 @@ class Sprite {
 	 */
 	function getHTMLAttributes() {
 		$htmlAttrs = "";
-		if(!isset($this->props['attr'])) return "";
+		if (!isset($this->props['attr'])) return "";
 		
-		if(count($this->props['attr']) > 0) {
+		if (count($this->props['attr']) > 0) {
 		    
-		    foreach($this->props['attr'] as $name => $val) {
-				if($name != "class")
+		    foreach ($this->props['attr'] as $name => $val) {
+				if ($name != "class")
 			         $htmlAttrs .= $name."=\"".$val."\" ";
 			}
 		}
 		
-		if($this->type == "video" && !isset($this->props['attr']['controls'])) {
+		if ($this->type == "video" && !isset($this->props['attr']['controls'])) {
 			$htmlAttrs .= " controls ";
 		}
 		
@@ -291,7 +294,7 @@ class Sprite {
 		// se trouve dans une vue ou pas.
 		// debug($this->events);
 		
-		foreach($this->events as $e) {
+		foreach ($this->events as $e) {
 		    $code = "";
 		    
 		    $dests = $e->getDests();
@@ -302,12 +305,12 @@ class Sprite {
 		    $sceneFilename = getSceneFilename($this->getSceneParent()->getId());
 		    
 		    // Si on charge dans une nouvelle page
-		    if($e->isExternal()) {
+		    if ($e->isExternal()) {
 		        $destSrc = $dests[0]->getFilename();
 		        
 		        $code = 'if(isInView) {'. // la scene est dans une vue et on veut atteindre une nouvelle page
 		  		            //'alert("1");'.
-                            'parent.'.$targetCode."='".$destSrc."';".  
+                            'parent.'.$targetCode."='".$destSrc."';".
                         '} else { '. //'alert("2");'.
                             $targetCode."='".$destSrc."';".
 		                '}';
@@ -315,14 +318,14 @@ class Sprite {
 		    // Si on charge dans une ou plusieurs iframe(s) de la meme page
 		    else {
 		        // On ne traite que les destinations non js ici
-		        if(!(count($dests) == 1 && $dests[0]->getType() == "js")) {
+		        if (!(count($dests) == 1 && $dests[0]->getType() == "js")) {
     		        $code .= "if(isInView) {";
-        		    foreach($dests as $dest) {
+        		    foreach ($dests as $dest) {
         		        
-        		        if($dest->getType() != "js") {
+        		        if ($dest->getType() != "js") {
             		        $destSrc = $dest->getFilename();
             		        
-            		        foreach($dest->getTargets() as $target) {
+            		        foreach ($dest->getTargets() as $target) {
                 		        $code .=
                 		        // Si on charge dans la frame dans laquelle on est
                     		    'if($("iframe[petri][src*=\''.$sceneFilename.'\']", parent.document).attr("id") == "'.$target.'") {'.
@@ -342,23 +345,23 @@ class Sprite {
 		        }
 		        
     		    // On ne traite que les actions js ici
-    		    foreach($dests as $dest) {
-    		        if($dest->getType() != "js") {
+    		    foreach ($dests as $dest) {
+    		        if ($dest->getType() != "js") {
     		            continue;
     		        }
     		        
     		        $jsArray = $dest->getJS();
     		        $targetSprite = $this->getSceneParent()->getSprite($jsArray['target']);
     		        
-    		        if($jsArray['action'] == "load") {
-    		            foreach($jsArray['source'] as $type => $source) {
-    		              if($type == "scene") {
+    		        if ($jsArray['action'] == "load") {
+    		            foreach ($jsArray['source'] as $type => $source) {
+    		              if ($type == "scene") {
     		                  // on charge une scene en ajax dans $jsArray['target']
     		                  $code .= '$.post("'.getSceneFilename($source).'", {}, function(fullHtml){'.
         		                          'var bodyHtml = /<body.*?>([\s\S]*)<\/body>/.exec(fullHtml)[1];'.
         		                          '$(".'.$targetSprite->getName().'").html(bodyHtml);'.
         		                       '});';
-    		              } else if($type == "sprite") {
+    		              } elseif ($type == "sprite") {
     		                  // on charge un sprite dans $jsArray['target']
     		                  $code .= '$.post("'.getSceneFilename($source).'", {}, function(fullHtml){'.
                 		                  'var spriteHtml = /<body.*?>([\s\S]*)<\/body>/.exec(fullHtml)[1];'.
@@ -367,7 +370,7 @@ class Sprite {
     		              }
     		            }
     		            
-    		        } else if($jsArray['action'] == "animation") {
+    		        } elseif ($jsArray['action'] == "animation") {
     		            $code .= $this->getJSAnimations($targetSprite, $jsArray['animations']);
     		        }
     		        
@@ -377,7 +380,7 @@ class Sprite {
             // $('video').on('ended', function(){ ... });
             // play, pause, ended
             // Seulement de l'interprétation de noms
-            switch($e->getEventType()) {
+            switch ($e->getEventType()) {
                 case "endDuration": $actionName = "ended"; break;
                 default: break;
             }
@@ -387,7 +390,6 @@ class Sprite {
             $jsEvents .= "}); ";
             
 		}
-		
 		
 		return $jsEvents;
 	}
@@ -401,38 +403,38 @@ class Sprite {
 	    $selector = '$(".'.$targetSprite->getName().'")';
 	    
 	    // On parcours toutes les animations.
-	    foreach($animations as $anim) {
+	    foreach ($animations as $anim) {
 	        // Si le type de l'animation n'est pas donné, on ne la traite pas.
-	        if(isset($anim['type'])) {
+	        if (isset($anim['type'])) {
 	            // Définition des valeurs par defaut si pas renseigné
-    	        if(!isset($anim['effect'])) 
+    	        if (!isset($anim['effect']))
     	            $anim['effect'] = "fade";
-    	        if(!isset($anim['duration']))
+    	        if (!isset($anim['duration']))
     	            $anim['duration'] = 500;
     	        
     	        // Ajout d'un delay si existe
-    	        if(isset($anim['delay'])) {
+    	        if (isset($anim['delay'])) {
     	            $jsAnim .= 'setTimeout(function(){ ';
     	        }
     	        
     	        // Si on veut repeter l'animation
-    	        if(isset($anim['interval'])) {
+    	        if (isset($anim['interval'])) {
     	            $jsAnim .= 'setInterval(function(){ ';
     	        }
     	        
     	        $nameAnim = 'show';
-    	        if($anim['type'] == "in") $nameAnim = "show";
-    	        else if($anim['type'] == "out") $nameAnim = "hide";
-    	        else if($anim['type'] == "toggle") $nameAnim = "toggle";
+    	        if ($anim['type'] == "in") $nameAnim = "show";
+    	        elseif ($anim['type'] == "out") $nameAnim = "hide";
+    	        elseif ($anim['type'] == "toggle") $nameAnim = "toggle";
     	       
     	        
-    	        if($anim['duration'] == 0) {
+    	        if ($anim['duration'] == 0) {
     	            $jsAnim .= $selector.".css('display', 'none');";
     	        } else {
-    	            if($anim['type'] == "custom") {
+    	            if ($anim['type'] == "custom") {
     	                $options = array();
-    	                foreach($anim as $k => $v) {
-    	                    if(in_array($k, array("duration","type","interval","delay","effect")))
+    	                foreach ($anim as $k => $v) {
+    	                    if (in_array($k, array("duration","type","interval","delay","effect")))
     	                        continue;
     	                    array_push($options, $k.':"'.$v.'"');
     	                }
@@ -443,11 +445,10 @@ class Sprite {
     	            }
     	        }
     	        
-    	        if(isset($anim['interval'])) {
+    	        if (isset($anim['interval'])) {
     	            $jsAnim .= "}, ".$anim['interval'].");";
     	        }
-    	        
-                if(isset($anim['delay'])) {
+                if (isset($anim['delay'])) {
                     $jsAnim .= '}, '.$anim['delay'].");";
                 }
 	        }
@@ -465,18 +466,20 @@ class Sprite {
 	 *         c'est à dire l'ordre dans lesquels ils doivent être affichés.
 	 */ 
 	function computeAllChildsIds() {
-	    if($this->getChildsIds() == null) { return null; }
+	    if ($this->getChildsIds() == null) {
+			return null;
+		}
 	    
 	    $tmpChilds = $this->getChilds();
 	    $allChilds = array($this->getId());
 	    
-	    while(count($tmpChilds) > 0) {
+	    while (count($tmpChilds) > 0) {
 	        $child = array_shift($tmpChilds);
 	        array_push($allChilds, $child->getId());
 	        //debug($child->getId());
 	        
 	        $childs = array_reverse($child->getChilds());
-	        foreach($childs as $c) {
+	        foreach ($childs as $c) {
 	            array_unshift($tmpChilds, $c);
 	        }
 	    }
@@ -484,4 +487,3 @@ class Sprite {
 	}
 	
 }
-?>

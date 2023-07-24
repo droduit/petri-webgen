@@ -1,24 +1,69 @@
 <?php 
-if(count($_FILES) == 0 && count($_POST) == 0) {
+if(count($_FILES) > 0 || count($_POST) > 0) {
+    include_once('header.inc.php');
+    
+    if(isset($_POST['pwd'])) {
+        $res['status'] = "err";
+        
+        $json_filename = $_SESSION['file'];
+        $json = file_get_contents($json_filename);
+        $petri = json_decode($json, true);
+        
+        if (hashPwd($_POST['pwd']) == getUserPwdHash()) {
+            $res['status'] = "ok";
+            $_SESSION['pwd'] = hashPwd($_POST['pwd']);
+        }
+
+        echo json_encode($res);
+    } else {
+        //generate unique file name
+        $fileName = time().'_'.basename($_FILES["file"]["name"]);
+        
+        //file upload path
+        $targetDir = __DIR__ . "/uploads/";
+        $targetFilePath = $targetDir . $fileName;
+        
+        
+        //allow certain file formats
+        $fileType = pathinfo($targetFilePath,PATHINFO_EXTENSION);
+        $allowTypes = array('json');
+        
+        if (in_array($fileType, $allowTypes)){
+            //upload file to server
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)) {
+                $response['status'] = 'ok';
+                $_SESSION['file'] = $targetFilePath;
+                $response['file'] = $_SESSION['file'];
+            } else {
+                $response['status'] = 'err';
+            }
+        } else{
+            $response['status'] = 'type_err';
+        }
+
+       echo json_encode($response);
+    }
+    exit();
+}
 ?>
 <div class="form-wrapper">
 	<div class="form-div">
         <form method="POST" enctype="multipart/form-data" id="form1">
-        	<div style="margin-bottom:8px; color:#555" class="info">1. Sélectionnez votre réseau de Pétri au format JSON</div>
-            <div class="button">Choisissez un fichier</div>
+        	<div class="info">Let's import your mighty Petri net and watch the magic unfold!</div>
+            <div class="button">Select the JSON file</div>
 			<input type="file" style="width:0px; opacity:0" />
         </form>
         
         <form method="post" id="form2" style="display:none">
-        	<div class="success">Réseau de Pétri importé avec succès !</div>
-        	<div style="margin-bottom:8px; color:#555" class="info">2. Sélectionnez l'emprunte numérique STAMP</div>
-            <div class="button">Choisissez un fichier</div>
+        	<div class="success">Great! Your Petri net was successfully imported!</div>
+        	<div class="info">Your digital fingerprint is the key to unlocking endless possibilities. Show us your STAMP and take control!</div>
+            <div class="button">Select the STAMP file</div>
 			<input type="file" style="width:0px; opacity:0" />
         </form>
     </div>
     
     <div class="modal">
-   		<img src="img/loader.svg" style="width:40px; margin-top: 7px">
+   		<img src="img/loader.svg" width="80px" height="80px" alt="Loading" />
     </div>
 </div>
 
@@ -31,7 +76,7 @@ $(document).ready(function () {
     });
 
 	$(document).on('drop dragover', function(e) {
-		showMessage("Veuillez sélectionner vos fichiers en cliquant sur le bouton ci-dessus.");
+		showMessage("Please select your files by clicking on the button above.");
 		e.preventDefault();
 	});
 
@@ -44,42 +89,35 @@ $(document).ready(function () {
 
         file = event.target.files[0];
         
-        var data = new FormData();        
+        const data = new FormData();
 
-		console.log("file", file);
-
-
-        if(!file.name.match('json')) {              
-            showMessage("Veuillez sélectionner un fichier JSON");
-        }else if(file.size > 1.5e7){
-            showMessage("Taille maximale de fichier : 10 MB");
-        }else{
-        	$('.modal').fadeIn();
+        if (!file.name.match('json')) {
+            showMessage("Please select a JSON file.");
+        } else if(file.size > 1.5e7) {
+            showMessage("Maximum file size: 10 MB.");
+        } else{
+        	$('.modal').css({ "opacity": 1, zIndex: 0 })
         	
             //append the uploadable file to FormData object
             data.append('file', file, file.name);
             
-            //create a new XMLHttpRequest
-            var xhr = new XMLHttpRequest();     
-            
-            //post file data for upload
-            xhr.open('POST', 'upload.php', true);  
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'upload.php', true);
             xhr.send(data);
             xhr.onload = function () {
                 //get response and show the uploading status
-                var response = JSON.parse(xhr.responseText);
-                if(xhr.status === 200 && response.status == 'ok'){
+                const response = JSON.parse(xhr.responseText);
+                if (xhr.status === 200 && response.status == 'ok') {
 
                 	$('#form1').fadeOut();
                 	$('#form2').fadeIn();
 
-                }else if(response.status == 'type_err'){
-                    showMessage("Veuillez sélectionner un fichier JSON");
-                }else{
-                    showMessage("Un problème s'est produit. Veuillez réésayer");
+                } else if(response.status == 'type_err') {
+                    showMessage("Please select a JSON file.");
+                } else{
+                    showMessage("An error occurred. Please try again.");
                 }
-                
-                $('.modal').fadeOut();
+                $('.modal').css({ "opacity": 0, zIndex: -1 });
             };
         }
 
@@ -90,22 +128,22 @@ $(document).ready(function () {
 	$('#form2 input[type="file"]').change(function(event){
         event.preventDefault();
         file = event.target.files[0];
-        var data = new FormData();        
+        var data = new FormData();
 
-        if(file.size > 400){
-            showMessage("Taille maximale de fichier : 400 octets");
-        }else{
+        if (file.size > 400){
+            showMessage("Maximum file size: 400 bytes.");
+        } else{
         	$('.modal').fadeIn();
         	
             data.append('file', file, file.name);
 
-            var xhr = new XMLHttpRequest();     
+            var xhr = new XMLHttpRequest();
             
-            xhr.open('POST', 'uploadStamp.php', true);  
+            xhr.open('POST', 'uploadStamp.php', true);
             xhr.send(data);
             xhr.onload = function () {
                 var response = JSON.parse(xhr.responseText);
-                if(xhr.status === 200 && response.status == 'ok'){
+                if (xhr.status === 200 && response.status == 'ok'){
 
 					<?php if(!$mdpRequired) {?>
 						loadProcessing();
@@ -114,7 +152,7 @@ $(document).ready(function () {
         			<?php } ?>
         			
                 } else{
-                    showMessage("Un problème s'est produit. Veuillez réésayer");
+                    showMessage("An error occurred. Please try again.");
                 }
 
                 $('.modal').fadeOut();
@@ -126,7 +164,7 @@ $(document).ready(function () {
 
 function pwdProcess() {
 	$('#form1, #form2').remove();
-	$('.form-div').html('<div style="text-align:center; padding:15px">En attente du mot de passe</div>');
+	$('.form-div').html('<div style="text-align:center; padding:15px">Awaiting password</div>');
 	
 	$('.modal-layer').fadeIn(500);
 	$('.modal-win').toggle('clip');
@@ -139,14 +177,14 @@ function pwdProcess() {
 			}, function(response){
 				var res = JSON.parse(response);
 				$('input#pwd').val("");
-				if(res.status == "ok") {
+				if (res.status == "ok") {
 					$('.modal-layer').fadeOut(500);
 					$('.modal-win').toggle('clip');
 					$('.bt-ok').unbind("click");
 					$('.modal-win input[type=password]').val("").unbind('keyup');
 					loadProcessing();
 				} else {
-					$('.result').html("Mot de passe faux!");
+					$('.result').html("Incorrect password!");
 				}
 			
 			});
@@ -154,7 +192,7 @@ function pwdProcess() {
 	});
 	
 	$('.modal-win input[type=password]').focus().bind('keyup', function(key){
-		if(key.which == 13) 
+		if (key.which === 13)
 			$('.bt-ok').trigger("click");
 	});
 }
@@ -164,12 +202,13 @@ function pwdProcess() {
 .form-wrapper {
     position: relative;
     padding: 12px;
+    padding-bottom: 40px;
 }
 form {
     text-align:center;
 }
 .modal {
-    display:none;
+    display: flex;
     background: rgba(255,255,255,0.95);
     position: absolute;
     left:0;
@@ -177,53 +216,10 @@ form {
     width: 100%;
     height: 100%;
     text-align:center;
+    align-items: center;
+    justify-content: center;
+    z-index: -1;
+    opacity: 0;
+    transition: all .6s linear;
 }
 </style>
-
-<?php
-} else {
-    include_once('header.inc.php');
-    
-    if(isset($_POST['pwd'])) {
-        $res['status'] = "err";
-        
-        $json_filename = $_SESSION['file'];
-        $json = file_get_contents($json_filename);  
-        $petri = json_decode($json, true);
-        
-        if(hashPwd($_POST['pwd']) == getUserPwdHash()) {
-            $res['status'] = "ok";
-            $_SESSION['pwd'] = hashPwd($_POST['pwd']);
-        }
-
-        echo json_encode($res);
-    } else {
-        //generate unique file name
-        $fileName = time().'_'.basename($_FILES["file"]["name"]);
-        
-        //file upload path
-        $targetDir = "uploads/";
-        $targetFilePath = $targetDir . $fileName;
-        
-        
-        //allow certain file formats
-        $fileType = pathinfo($targetFilePath,PATHINFO_EXTENSION);
-        $allowTypes = array('json');
-        
-        if(in_array($fileType, $allowTypes)){
-            //upload file to server
-            if(move_uploaded_file($_FILES["file"]["tmp_name"], $targetFilePath)){
-                $response['status'] = 'ok';
-                $_SESSION['file'] = $targetFilePath;
-                $response['file'] = $_SESSION['file'];
-            } else{
-                $response['status'] = 'err';
-            }
-        }else{
-            $response['status'] = 'type_err';
-        }
-
-       echo json_encode($response);
-    }
-}
-?>

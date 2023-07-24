@@ -41,4 +41,3 @@ class Transition {
 	//function getTargets() { return $this->targets; }
 
 }
-?>

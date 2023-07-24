@@ -2,3 +2,5 @@
 generated/
 .settings
 .project
+uploads/
+.DS_Store

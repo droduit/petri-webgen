@@ -13,3 +13,11 @@ Les réseaux de Pétri permettent de modéliser un nombre infini d’application
 
 Un logiciel de modélisation de réseaux de Pétri pour générer des fichiers en représentant une description au format JSON est déjà existant. Nous voulons ici utiliser le JSON généré, correspondant à la description d’applications WEB, et ainsi concevoir une 
 prochaine étape, qui transformera le réseau de Pétri en une application WEB fonctionnelle, exploitant la combinaison HTML-CSS-JS. 
+
+## Déploiement
+1. Créer un dossier `uploads` avec les droits en écriture
+2. Assurez-vous que le dossier `generated` possède les droits en écriture
+
+## Demo
+Le dossier `demo` contient des exemples de réseau de Petri au format JSON.
+Le mot de passe de `ex1` est `demo`.

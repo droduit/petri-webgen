@@ -187,6 +187,10 @@ function getFooter() {
  */
 function createFile($path, $content) {
 	$file = fopen($path, 'w');
+	if ($file === false) {
+		echo "Failed to open the file: $path";
+		return;
+	}
 	fwrite($file, $content);
 	fclose($file);
 }

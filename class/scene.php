@@ -27,7 +27,7 @@ class Scene {
 	function __construct($scene=array()) {
 		$this->sceneArray = $scene;
 		
-		$this->id = $this->sceneArray['id'];	
+		$this->id = $this->sceneArray['id'];
 		$this->title = isset($scene['title']) ? $scene['title'] : $this->id;
 		$this->sprites = array();
 		
@@ -43,7 +43,7 @@ class Scene {
 	    $this->sprites[$sprite->getId()] = $sprite;
 
 	    $childsIds = $sprite->getChildsIds();
-	    foreach($childsIds as $ci) {
+	    foreach ($childsIds as $ci) {
 	       array_push($this->childsIds, $ci);
 	    }
 	}
@@ -61,8 +61,8 @@ class Scene {
 	 * Délégation des évenements de la transition aux sprites de la scène
 	 */
 	function bindTransition($transition) {
-		foreach($transition->getEvents() as $e) {
-			if(isset( $this->sprites[(string)$e->getElemTrigger()]) && !is_null($this->sprites[(string)$e->getElemTrigger()])) {
+		foreach ($transition->getEvents() as $e) {
+			if (isset( $this->sprites[(string)$e->getElemTrigger()]) && !is_null($this->sprites[(string)$e->getElemTrigger()])) {
 				$this->sprites[(string)$e->getElemTrigger()]->attachEvent($e);
 			}
 		}
@@ -82,19 +82,19 @@ class Scene {
 		$htmlProp = "<style>";
 		
 		// Style of the scene
-		if(isset($this->sceneArray['style'])) {
+		if (isset($this->sceneArray['style'])) {
 			$htmlProp .= "body {";
-			foreach($this->sceneArray['style'] as $k => $v) {
+			foreach ($this->sceneArray['style'] as $k => $v) {
 				$htmlProp .= $k .":". $v."; ";
 			}
 			$htmlProp .= "} ";
 		}
 		
 		// Custom class
-		if(isset($this->sceneArray['css'])) {
-			foreach($this->sceneArray['css'] as $class => $values) {
+		if (isset($this->sceneArray['css'])) {
+			foreach ($this->sceneArray['css'] as $class => $values) {
 				$htmlProp .= $class." {";
-				foreach($values as $k => $v) {
+				foreach ($values as $k => $v) {
 					$htmlProp .= $k .":". $v."; ";
 				}
 				$htmlProp .= "} ";
@@ -102,17 +102,17 @@ class Scene {
 		}
 		
 		// Styles of sprites
-		foreach($this->sprites as $sprite) {
+		foreach ($this->sprites as $sprite) {
 			$props = $sprite->getProps();
 			
-			if(isset($props['style']) && count($props['style']) == 0)
+			if (isset($props['style']) && count($props['style']) == 0)
 				return $htmlProp=="" ? "" : $htmlProp."</style>";
 			
-			foreach($CSS_STYLES as $kindCss) {
-				if(isset($props[$kindCss]) && count($props[$kindCss]) > 0) {
+			foreach ($CSS_STYLES as $kindCss) {
+				if (isset($props[$kindCss]) && count($props[$kindCss]) > 0) {
 					$kind = ($kindCss != "style") ? ":".$kindCss : "";
 					$htmlProp.= ".".$sprite->getName().$kind." {";
-					foreach($props[$kindCss] as $k => $v) {
+					foreach ($props[$kindCss] as $k => $v) {
 						$htmlProp .= $k.":".$v."; ";
 					}
 					$htmlProp .= "}";
@@ -133,20 +133,20 @@ class Scene {
 		$scripts = "";
 		
 		// Custom JS entré par l'utilisateur
-		if(isset($this->sceneArray['js'])) {
-			foreach($this->sceneArray['js'] as $js) {
+		if (isset($this->sceneArray['js'])) {
+			foreach ($this->sceneArray['js'] as $js) {
 				$scripts .= $js;
-				if(substr($js, -1) != ";") $scripts .= ";";
+				if (substr($js, -1) != ";") $scripts .= ";";
 			}
 		}
 	   
 		// JS des sprites de la scene
-		foreach($this->sprites as $sprite) {
+		foreach ($this->sprites as $sprite) {
 			$scripts .= $sprite->getJSEvents();
 			$scripts .= $sprite->getJSAnimations($sprite, $sprite->getAnimations());
 		}
 		
-		if(empty($scripts)) return "";
+		if (empty($scripts)) return "";
 		return "<script>$(function(){ ".$scripts." });</script>";
 	}
 	
@@ -159,8 +159,8 @@ class Scene {
 		    return !in_array($s->getId(), $this->childsIds);
 		});
 		
-		if(count($spritesToRender) > 0) {
-		    foreach($spritesToRender as $sprite) {
+		if (count($spritesToRender) > 0) {
+		    foreach ($spritesToRender as $sprite) {
 				$html .= $sprite->getHTML();
 			}
 		}
@@ -196,9 +196,8 @@ class Scene {
      * respectifs en appelant leur fonction de calcul des enfants 
      */
 	function processSpritesChilds() {
-	    foreach($this->sprites as $sprite) {
+	    foreach ($this->sprites as $sprite) {
 	        $sprite->setAllChildsIds($sprite->computeAllChildsIds());
 	    }
 	}
 }
-?>
