@@ -63,10 +63,11 @@ a, a:hover, a:active {
 	border: 1px solid #e79474;
 }
 .info {
-    font-size: 1.4rem;
-	font-weight: 500;
+    font-size: 1.3rem;
+	font-weight: 300;
 	margin: 30px 0;
-	color: #333;
+	color: #5b5b5b;
+	line-height: 1.5em;
 }
 ul.files {
 	padding-left:0;
@@ -178,6 +179,13 @@ img.loader {
 }
 .modal-win .result { padding-top: 6px; }
 
+.error-reporting {
+	margin: 15px 0;
+	font-size: 1rem;
+	& > li {
+		margin-bottom: 10px;
+	}
+}
 /* ---------- Debug area styles ------------ */
 .debug-area {
 	position: fixed;

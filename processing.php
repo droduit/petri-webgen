@@ -104,7 +104,7 @@ if (!$debug_mode && $mdpRequired && $_SESSION['pwd'] != getUserPwdHash()) {
     if (count($err) > 0) {
         // Display Errors if there is some
         echo '<div class="error">'.count($err).' error(s) occured during the generating process</div>';
-        echo '<ul>';
+        echo '<ul class="error-reporting">';
         foreach ($err as $er) {
             echo "<li>".$er."</li>";
         }

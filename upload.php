@@ -56,7 +56,7 @@ if(count($_FILES) > 0 || count($_POST) > 0) {
         
         <form method="post" id="form2" style="display:none">
         	<div class="success">Great! Your Petri net was successfully imported!</div>
-        	<div class="info">Your digital fingerprint is the key to unlocking endless possibilities. Show us your STAMP and take control!</div>
+        	<div class="info">Your digital fingerprint is the key to unlocking endless possibilities.<br>Show us your STAMP and take control!</div>
             <div class="button">Select the STAMP file</div>
 			<input type="file" style="width:0px; opacity:0" />
         </form>
@@ -109,12 +109,13 @@ $(document).ready(function () {
                 const response = JSON.parse(xhr.responseText);
                 if (xhr.status === 200 && response.status == 'ok') {
 
-                	$('#form1').fadeOut();
-                	$('#form2').fadeIn();
+                	$('#form1').fadeOut().promise().done(function() {
+                        $('#form2').fadeIn();
+                    });
 
-                } else if(response.status == 'type_err') {
+                } else if (response.status == 'type_err') {
                     showMessage("Please select a JSON file.");
-                } else{
+                } else {
                     showMessage("An error occurred. Please try again.");
                 }
                 $('.modal').css({ "opacity": 0, zIndex: -1 });
